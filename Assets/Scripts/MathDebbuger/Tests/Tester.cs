@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using MathDebbuger;
 using CustomMath;
+
 public class Tester : MonoBehaviour
 {
+    [SerializeField] 
     void Start()
     {
         List<Vector3> vectors = new List<Vector3>();
@@ -42,7 +44,7 @@ public class Tester : MonoBehaviour
     {
         for (int i = 0; i < 100; i++)
         {
-            //Vector3Debugger.UpdatePosition("elAzul", new Vector3(2.4f, 6.3f, 0.5f) * (i * 0.05f));
+            Vector3Debugger.UpdatePosition("elAzul", new Vector3(2.4f, 6.3f, 0.5f) * (i * 0.05f));
             yield return new WaitForSeconds(0.2f);
         }
     }
