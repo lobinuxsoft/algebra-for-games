@@ -47,6 +47,12 @@ public class Exercise1 : MonoBehaviour
             case 4:
                 vecC = -Vec3.Cross(vecA, vecB); // Producto cruz invertido
                 break;
+            case 5:
+                vecC = Vec3.Lerp(vecA, vecB, Time.time % 1); // Interpolacion lineal
+                break;
+            case 6:
+                vecC = Vec3.Max(vecA, vecB); // Se usa el maximo entre vectores
+                break;
         }
 
         MathDebbuger.Vector3Debugger.UpdatePosition("VectorA", transform.position, transform.position + vecA);
