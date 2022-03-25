@@ -3,6 +3,7 @@ using CustomMath;
 
 public class Exercise1 : MonoBehaviour
 {
+    [SerializeField, Range(.1f, 1)] float lerpSpeed = .2f;
     [SerializeField, Range(1, 10)] int exerciseIndex = 1;
     [SerializeField] Vector3 vectorA;
     [SerializeField] Vector3 vectorB;
@@ -10,6 +11,8 @@ public class Exercise1 : MonoBehaviour
     Vec3 vecA = Vec3.Zero;
     Vec3 vecB = Vec3.Zero;
     Vec3 vecC = Vec3.Zero;
+
+    float lerpTime = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -32,7 +35,8 @@ public class Exercise1 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        lerpTime = lerpTime > 1 ? 0 : lerpTime + Time.deltaTime * lerpSpeed;
+
         switch (exerciseIndex)
         {
             case 1: // Suma de vectores
@@ -45,13 +49,25 @@ public class Exercise1 : MonoBehaviour
                 vecC = new Vec3(vecA.x * vecB.x, vecA.y * vecB.y, vecA.z * vecB.z); // Multiplicacion de vectores
                 break;
             case 4:
-                vecC = -Vec3.Cross(vecA, vecB); // Producto cruz invertido
+                vecC = -Vec3.Cross(vecA, vecB); // Producto cruz invertido 
                 break;
             case 5:
-                vecC = Vec3.Lerp(vecA, vecB, Time.time % 1); // Interpolacion lineal
+                vecC = Vec3.Lerp(vecA, vecB, lerpTime); // Interpolacion lineal
                 break;
             case 6:
                 vecC = Vec3.Max(vecA, vecB); // Se usa el maximo entre vectores
+                break;
+            case 7:
+                vecC = Vec3.Project(vecA, vecB); // Proyeccion 
+                break;
+            case 8:
+                // No tengo idea
+                break;
+            case 9:
+                vecC = Vec3.Reflect(vecA, new Vec3(vecB.normalized)); // Reflexccion
+                break;
+            case 10:
+                // No tengo idea
                 break;
         }
 
