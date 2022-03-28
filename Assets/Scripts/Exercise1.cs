@@ -3,7 +3,6 @@ using CustomMath;
 
 public class Exercise1 : MonoBehaviour
 {
-    [SerializeField, Range(.1f, 1)] float lerpSpeed = .2f;
     [SerializeField, Range(1, 10)] int exerciseIndex = 1;
     [SerializeField] Vector3 vectorA;
     [SerializeField] Vector3 vectorB;
@@ -35,8 +34,6 @@ public class Exercise1 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        lerpTime = lerpTime > 1 ? 0 : lerpTime + Time.deltaTime * lerpSpeed;
-
         switch (exerciseIndex)
         {
             case 1: // Suma de vectores
@@ -52,6 +49,9 @@ public class Exercise1 : MonoBehaviour
                 vecC = -Vec3.Cross(vecA, vecB); // Producto cruz invertido 
                 break;
             case 5:
+
+                lerpTime = lerpTime > 1 ? 0 : lerpTime + Time.deltaTime;
+
                 vecC = Vec3.Lerp(vecA, vecB, lerpTime); // Interpolacion lineal
                 break;
             case 6:
@@ -61,13 +61,16 @@ public class Exercise1 : MonoBehaviour
                 vecC = Vec3.Project(vecA, vecB); // Proyeccion 
                 break;
             case 8:
-                // No tengo idea
+                vecC = new Vec3((vecA + vecB).normalized) * Vec3.Distance(vecA, vecB); // Suma de vectores normalizada, multiplicado por la distancia de los mismos.
                 break;
             case 9:
-                vecC = Vec3.Reflect(vecA, new Vec3(vecB.normalized)); // Reflexccion
+                vecC = Vec3.Reflect(vecA, new Vec3(vecB.normalized)); // Reflexion
                 break;
             case 10:
-                // No tengo idea
+
+                lerpTime = lerpTime > 1 ? 0 : lerpTime + Time.deltaTime * .1f;
+
+                vecC = Vec3.LerpUnclamped(vecB, vecA, Vec3.Min(vecA, vecB).magnitude * lerpTime); // Interpolacion lineal sin limites
                 break;
         }
 

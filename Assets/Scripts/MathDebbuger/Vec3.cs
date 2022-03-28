@@ -164,43 +164,43 @@ namespace CustomMath
             return (float)Math.Sqrt(vec3.x * vec3.x + vec3.y * vec3.y + vec3.z * vec3.z);
         }
 
-        public static Vec3 Cross(Vec3 a, Vec3 b)
+        public static Vec3 Cross(Vec3 vectorA, Vec3 vectorB)
         {
-            return new Vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+            return new Vec3(vectorA.y * vectorB.z - vectorA.z * vectorB.y, vectorA.z * vectorB.x - vectorA.x * vectorB.z, vectorA.x * vectorB.y - vectorA.y * vectorB.x);
         }
 
-        public static float Distance(Vec3 a, Vec3 b)
+        public static float Distance(Vec3 vectorA, Vec3 vectorB)
         {
-            float newX = a.x - b.x;
-            float newY = a.y - b.y;
-            float newZ = a.z - b.z;
+            float newX = vectorA.x - vectorB.x;
+            float newY = vectorA.y - vectorB.y;
+            float newZ = vectorA.z - vectorB.z;
             return (float)Math.Sqrt(newX * newX + newY * newY + newZ * newZ);
         }
 
-        public static float Dot(Vec3 a, Vec3 b)
+        public static float Dot(Vec3 vectorA, Vec3 vectorB)
         {
-            return a.x * b.x + a.y * b.y + a.z * b.z;
+            return vectorA.x * vectorB.x + vectorA.y * vectorB.y + vectorA.z * vectorB.z;
         }
 
-        public static Vec3 Lerp(Vec3 a, Vec3 b, float t)
+        public static Vec3 Lerp(Vec3 vectorA, Vec3 vectorB, float time)
         {
-            t = Mathf.Clamp01(t);
-            return new Vec3(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t);
+            time = Mathf.Clamp01(time);
+            return new Vec3(vectorA.x + (vectorB.x - vectorA.x) * time, vectorA.y + (vectorB.y - vectorA.y) * time, vectorA.z + (vectorB.z - vectorA.z) * time);
         }
 
-        public static Vec3 LerpUnclamped(Vec3 a, Vec3 b, float t)
+        public static Vec3 LerpUnclamped(Vec3 vectorA, Vec3 vectorB, float time)
         {
-            return new Vec3(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t);
+            return new Vec3(vectorA.x + (vectorB.x - vectorA.x) * time, vectorA.y + (vectorB.y - vectorA.y) * time, vectorA.z + (vectorB.z - vectorA.z) * time);
         }
 
-        public static Vec3 Max(Vec3 a, Vec3 b)
+        public static Vec3 Max(Vec3 vectorA, Vec3 vectorB)
         {
-            return new Vec3(Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y), Mathf.Max(a.z, b.z));
+            return new Vec3(Mathf.Max(vectorA.x, vectorB.x), Mathf.Max(vectorA.y, vectorB.y), Mathf.Max(vectorA.z, vectorB.z));
         }
 
-        public static Vec3 Min(Vec3 a, Vec3 b)
+        public static Vec3 Min(Vec3 vectorA, Vec3 vectorB)
         {
-            return new Vec3(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Min(a.z, b.z));
+            return new Vec3(Mathf.Min(vectorA.x, vectorB.x), Mathf.Min(vectorA.y, vectorB.y), Mathf.Min(vectorA.z, vectorB.z));
         }
 
         public static float SqrMagnitude(Vec3 vec3)
@@ -208,6 +208,7 @@ namespace CustomMath
             return vec3.x * vec3.x + vec3.y * vec3.y + vec3.z * vec3.z;
         }
 
+        // https://www.youtube.com/watch?v=VTV1GTrrtBQ&list=PLW3Zl3wyJwWMcLmUYXMIIxCiLKGOWLETh&index=9
         public static Vec3 Project(Vec3 vec3, Vec3 onNormal) 
         {
             float dot = Dot(onNormal, onNormal);
@@ -221,6 +222,8 @@ namespace CustomMath
             return new Vec3(onNormal.x * dot2 / dot, onNormal.y * dot2 / dot, onNormal.z * dot2 / dot);
         }
 
+        // https://www.youtube.com/watch?v=naaeH1qbjdQ
+        // https://www.youtube.com/watch?v=NOBhfEHOYZs este se entiende mejor
         public static Vec3 Reflect(Vec3 inDirection, Vec3 inNormal) 
         {
             return -2f * Dot(inNormal, inDirection) * inNormal + inDirection;
