@@ -1,7 +1,7 @@
 using UnityEngine;
 using CustomMath;
 
-public class Exercise1 : MonoBehaviour
+public class Exercises : MonoBehaviour
 {
     [SerializeField, Range(1, 10)] int exerciseIndex = 1;
     [SerializeField] Vector3 vectorA;
@@ -36,14 +36,14 @@ public class Exercise1 : MonoBehaviour
     {
         switch (exerciseIndex)
         {
-            case 1: // Suma de vectores
-                vecC = vecA + vecB;
+            case 1:
+                vecC = vecA + vecB; // Suma de vectores
                 break;
             case 2:
                 vecC = vecB - vecA; // Diferencia de vectores
                 break;
             case 3:
-                vecC = new Vec3(vecA.x * vecB.x, vecA.y * vecB.y, vecA.z * vecB.z); // Multiplicacion de vectores
+                vecC = new Vec3(vecA.x * vecB.x, vecA.y * vecB.y, vecA.z * vecB.z); // Multiplicacion de los componentes de los vectores
                 break;
             case 4:
                 vecC = -Vec3.Cross(vecA, vecB); // Producto cruz invertido 
@@ -68,9 +68,9 @@ public class Exercise1 : MonoBehaviour
                 break;
             case 10:
 
-                lerpTime = lerpTime > 1 ? 0 : lerpTime + Time.deltaTime * .1f;
+                lerpTime = lerpTime > Vec3.Min(vecA, vecB).magnitude ? 0 : lerpTime + Time.deltaTime;
 
-                vecC = Vec3.LerpUnclamped(vecB, vecA, Vec3.Min(vecA, vecB).magnitude * lerpTime); // Interpolacion lineal sin limites
+                vecC = Vec3.LerpUnclamped(vecB, vecA, lerpTime); // Interpolacion lineal sin limites
                 break;
         }
 

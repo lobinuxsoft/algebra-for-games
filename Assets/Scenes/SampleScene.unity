@@ -434,8 +434,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ejercicio: 9
   vectorColor: {r: 1, g: 0, b: 0, a: 1}
-  a: {x: 10, y: 0, z: 0}
-  b: {x: 10, y: 10, z: 0}
+  a: {x: 10, y: 5, z: 0}
+  b: {x: 0, y: 5, z: 10}
 --- !u!4 &614339626
 Transform:
   m_ObjectHideFlags: 0
@@ -461,7 +461,7 @@ GameObject:
   - component: {fileID: 2095221478}
   - component: {fileID: 2095221477}
   m_Layer: 0
-  m_Name: Exercise 1
+  m_Name: Exercises
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -480,8 +480,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   exerciseIndex: 10
-  vectorA: {x: 10, y: 0, z: 0}
-  vectorB: {x: 10, y: 10, z: 0}
+  vectorA: {x: 10, y: 5, z: 0}
+  vectorB: {x: 0, y: 5, z: 10}
 --- !u!4 &2095221478
 Transform:
   m_ObjectHideFlags: 0
