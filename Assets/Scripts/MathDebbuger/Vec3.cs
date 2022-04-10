@@ -211,15 +211,15 @@ namespace CustomMath
         // https://www.youtube.com/watch?v=VTV1GTrrtBQ&list=PLW3Zl3wyJwWMcLmUYXMIIxCiLKGOWLETh&index=9
         public static Vec3 Project(Vec3 vec3, Vec3 onNormal) 
         {
-            float dot = Dot(onNormal, onNormal);
+            float dot = Dot(onNormal, onNormal); // Esto se hace para corroborar que no se divida por cero
 
             if (dot < Mathf.Epsilon)
             {
                 return Zero;
             }
 
-            float dot2 = Dot(vec3, onNormal);
-            return new Vec3(onNormal.x * dot2 / dot, onNormal.y * dot2 / dot, onNormal.z * dot2 / dot);
+            float dot2 = Dot(vec3, onNormal); // Esto es para saber si las direcciones son las mismas.
+            return new Vec3(onNormal.x * dot2 / dot, onNormal.y * dot2 / dot, onNormal.z * dot2 / dot); // Aca se calcula cuanto se proyecta del vector con el otro.
         }
 
         // https://www.youtube.com/watch?v=naaeH1qbjdQ
@@ -229,7 +229,7 @@ namespace CustomMath
             return -2f * Dot(inNormal, inDirection) * inNormal + inDirection;
         }
 
-        public static Vector3 Normalize(Vec3 vec3)
+        public static Vec3 Normalize(Vec3 vec3)
         {
             float num = Magnitude(vec3);
             if (num > epsilon)

@@ -6,7 +6,6 @@ using CustomMath;
 
 public class Tester : MonoBehaviour
 {
-    [SerializeField] 
     void Start()
     {
         List<Vector3> vectors = new List<Vector3>();
