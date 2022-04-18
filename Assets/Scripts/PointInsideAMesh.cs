@@ -14,10 +14,12 @@ public class PointInsideAMesh : MonoBehaviour
     [SerializeField] private bool isColliding = false;
     
     private MeshFilter meshFilter;
-    
+    private int[] meshIndices;
+
     private void Awake()
     {
         meshFilter = GetComponent<MeshFilter>();
+        meshIndices = meshFilter.mesh.GetIndices(0);
     }
 
     private void Update()
@@ -29,18 +31,24 @@ public class PointInsideAMesh : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Detecta si un punto esta dentro de una mesh utilizando un <see cref="Plane"/>.>
+    /// </summary>
+    /// <param name="mesh">Se usa para poder calcular los planos.</param>
+    /// <param name="point">La posicion de un punto en el espacio.</param>
+    /// <returns></returns>
     bool DetectCollision(Mesh mesh, Vec3 point)
     {
-        for (int i = 0; i < mesh.GetIndices(0).Length; i += 3)
+        for (int i = 0; i < meshIndices.Length; i += 3)
         {
-            Vec3 v1 = new Vec3(mesh.vertices[mesh.GetIndices(0)[i]]);
-            Vec3 v2 = new Vec3(mesh.vertices[mesh.GetIndices(0)[i + 1]]);
-            Vec3 v3 = new Vec3(mesh.vertices[mesh.GetIndices(0)[i + 2]]);
+            Vec3 v1 = new Vec3(mesh.vertices[meshIndices[i]]);
+            Vec3 v2 = new Vec3(mesh.vertices[meshIndices[i + 1]]);
+            Vec3 v3 = new Vec3(mesh.vertices[meshIndices[i + 2]]);
             
             // Paso las coordenadas locales a globales...
-            v1 = new Vec3(FromLocalToWolrd(new Vector3(v1.x,v1.y,v1.z), transform));
-            v2 = new Vec3(FromLocalToWolrd(new Vector3(v2.x,v2.y,v2.z), transform));
-            v3 = new Vec3(FromLocalToWolrd(new Vector3(v3.x,v3.y,v3.z), transform));
+            v1 = FromLocalToWolrd(v1, transform);
+            v2 = FromLocalToWolrd(v2, transform);
+            v3 = FromLocalToWolrd(v3, transform);
 
             Vec3 pos = new Vec3(transform.position);
             
@@ -52,17 +60,24 @@ public class PointInsideAMesh : MonoBehaviour
         return true;
     }
     
-    private Vector3 FromLocalToWolrd(Vector3 point, Transform transformRef)
+    /// <summary>
+    /// Transforma una posicion local en global
+    /// </summary>
+    /// <param name="point">Una posicion en el espacio</param>
+    /// <param name="transformRef">Un trasform que se usa de referencia para poder transformar las posiciones globales en locales.</param>
+    /// <returns></returns>
+    private Vec3 FromLocalToWolrd(Vec3 point, Transform transformRef)
     {
-        Vector3 result = Vector3.zero;
+        Vec3 result = Vec3.Zero;
 
-        result = new Vector3(point.x * transformRef.localScale.x, point.y * transformRef.localScale.y, point.z * transformRef.localScale.z);
+        result = new Vec3(point.x * transformRef.localScale.x, point.y * transformRef.localScale.y, point.z * transformRef.localScale.z);
+        
+        result *= transformRef.localRotation;
 
-        result = transformRef.localRotation * result;
-
-        return result + transformRef.position;
+        return result + new Vec3(transformRef.position);
     }
-    
+
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         Color result = isColliding ? colisionColor : normalColor;
@@ -86,9 +101,9 @@ public class PointInsideAMesh : MonoBehaviour
                     Vec3 v3 = new Vec3(meshFilter.mesh.vertices[meshFilter.mesh.GetIndices(0)[i + 2]]);
                 
                     // Paso las coordenadas locales a globales...
-                    v1 = new Vec3(FromLocalToWolrd(new Vector3(v1.x,v1.y,v1.z), transform));
-                    v2 = new Vec3(FromLocalToWolrd(new Vector3(v2.x,v2.y,v2.z), transform));
-                    v3 = new Vec3(FromLocalToWolrd(new Vector3(v3.x,v3.y,v3.z), transform));
+                    v1 = FromLocalToWolrd(v1, transform);
+                    v2 = FromLocalToWolrd(v2, transform);
+                    v3 = FromLocalToWolrd(v3, transform);
 
                     Plane plane = new Plane(v1, v2, v3);
 
@@ -106,4 +121,5 @@ public class PointInsideAMesh : MonoBehaviour
             Gizmos.DrawSphere(point.position, pointGizmosSize);
         }
     }
+#endif
 }
