@@ -11,7 +11,8 @@ public class Exercises : MonoBehaviour
     Vec3 vecB = Vec3.Zero;
     Vec3 vecC = Vec3.Zero;
 
-    float lerpTime = 0;
+    float lerpTimeExercise5 = 0;
+    float lerpTimeExercise10 = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -50,9 +51,9 @@ public class Exercises : MonoBehaviour
                 break;
             case 5:
 
-                lerpTime = lerpTime > 1 ? 0 : lerpTime + Time.deltaTime;
+                lerpTimeExercise5 = lerpTimeExercise5 > 1 ? 0 : lerpTimeExercise5 + Time.deltaTime;
 
-                vecC = Vec3.Lerp(vecA, vecB, lerpTime); // Interpolacion lineal
+                vecC = Vec3.Lerp(vecA, vecB, lerpTimeExercise5); // Interpolacion lineal
                 break;
             case 6:
                 vecC = Vec3.Max(vecA, vecB); // Se usa el maximo entre vectores
@@ -68,9 +69,9 @@ public class Exercises : MonoBehaviour
                 break;
             case 10:
 
-                lerpTime = lerpTime > Vec3.Min(vecA, vecB).magnitude ? 0 : lerpTime + Time.deltaTime;
+                lerpTimeExercise10 = lerpTimeExercise10 >= 10 ? 0 : lerpTimeExercise10 + Time.deltaTime;
 
-                vecC = Vec3.LerpUnclamped(vecB, vecA, lerpTime); // Interpolacion lineal sin limites
+                vecC = Vec3.LerpUnclamped(vecB, vecA, lerpTimeExercise10); // Interpolacion lineal sin limites
                 break;
         }
 
