@@ -153,7 +153,7 @@ namespace CustomMath
             return (double)distanceToPoint1 > 0.0 && (double)distanceToPoint2 > 0.0 ||
                    (double)distanceToPoint1 <= 0.0 && (double)distanceToPoint2 <= 0.0;
         }
-        
+
         public override string ToString() => $"normal:{this._normal}, distance:{this._distance}";
     }
 }

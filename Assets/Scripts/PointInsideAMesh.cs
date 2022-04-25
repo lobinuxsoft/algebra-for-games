@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using CustomMath;
 using UnityEngine;
 using Plane = CustomMath.Plane;
@@ -6,12 +8,12 @@ using Plane = CustomMath.Plane;
 public class PointInsideAMesh : MonoBehaviour
 {
     [SerializeField] private Transform point;
-    [SerializeField] private bool showPlaneNormals = false;
+    [SerializeField] private bool showPlaneNormals;
     [SerializeField, Range(0, 1)] private float pointGizmosSize = .25f;
     [SerializeField] Color normalColor = Color.cyan;
     [SerializeField] Color colisionColor = Color.red;
 
-    [SerializeField] private bool isColliding = false;
+    [SerializeField] private bool isColliding;
     
     private MeshFilter meshFilter;
     private int[] meshIndices;
@@ -39,6 +41,12 @@ public class PointInsideAMesh : MonoBehaviour
     /// <returns></returns>
     bool DetectCollision(Mesh mesh, Vec3 point)
     {
+        List<Plane> planes = new List<Plane>();
+        Vec3 pos = new Vec3(transform.position);
+        
+        // TODO 1.Crear un Bounding Box, 2.Reordenar caras de Mayor a menor, 3.Tener en cuenta la escala del objeto.
+        
+        // Crear planos y meterlos en una lista
         for (int i = 0; i < meshIndices.Length; i += 3)
         {
             Vec3 v1 = new Vec3(mesh.vertices[meshIndices[i]]);
@@ -49,11 +57,18 @@ public class PointInsideAMesh : MonoBehaviour
             v1 = FromLocalToWolrd(v1, transform);
             v2 = FromLocalToWolrd(v2, transform);
             v3 = FromLocalToWolrd(v3, transform);
-
-            Vec3 pos = new Vec3(transform.position);
             
             Plane plane = new Plane(v1, v2, v3);
 
+            planes.Add(plane);
+        }
+        
+        // Ordeno de mayor a menor
+        planes = planes.OrderByDescending(plane1 => plane1.distance).ToList();
+
+        // Checkear los planos
+        foreach (Plane plane in planes)
+        {
             if (plane.SameSide(pos + plane.normal, point)) return false;
         }
         
@@ -75,6 +90,37 @@ public class PointInsideAMesh : MonoBehaviour
         result *= transformRef.localRotation;
 
         return result + new Vec3(transformRef.position);
+    }
+
+    private Vector3[] CalculateBoundingBox(Vector3[] vertices)
+    {
+        Vector3[] result = new Vector3[6];
+
+        Vector3 left = Vector3.zero;
+        Vector3 right = Vector3.zero;
+        Vector3 forward = Vector3.zero;
+        Vector3 backward = Vector3.zero;
+        Vector3 up = Vector3.zero;
+        Vector3 down = Vector3.zero;
+
+        foreach (var vert in vertices)
+        {
+            if (vert.x < left.x) left = -vert.x * Vector3.left;
+            if (vert.x > right.x) right = vert.x * Vector3.right;
+            if (vert.z > forward.z) forward = vert.z * Vector3.forward;
+            if (vert.z < backward.z) backward = -vert.z * Vector3.back;
+            if (vert.y > up.y) up = vert.y * Vector3.up;
+            if (vert.y < down.y) down = -vert.y * Vector3.down;
+        }
+        
+        result[0] = left;
+        result[1] = right;
+        result[2] = forward;
+        result[3] = backward;
+        result[4] = up;
+        result[5] = down;
+
+        return result;
     }
 
 #if UNITY_EDITOR
@@ -112,6 +158,13 @@ public class PointInsideAMesh : MonoBehaviour
                     Gizmos.color = Color.green;
                     Gizmos.DrawLine(transform.position, normal + transform.position);
                 }
+            }
+
+            Vector3[] bound = CalculateBoundingBox(meshFilter.mesh.vertices);
+
+            for (int i = 0; i < bound.Length; i++)
+            {
+                Gizmos.DrawSphere(bound[i], pointGizmosSize);
             }
         }
 
