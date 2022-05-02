@@ -1,28 +1,33 @@
-using System;
-
 namespace CustomMath
 {
     public struct Plane
     {
-        private Vec3 _normal;
-        private float _distance;
+        private Vec3 normal;
+        private float distance;
+        private float area;
 
         /// <summary>
         /// Normal del plano
         /// </summary>
-        public Vec3 normal
+        public Vec3 Normal
         {
-            get { return _normal; }
-            set { _normal = value; }
+            get { return normal; }
+            set { normal = value; }
         }
 
         /// <summary>
         /// La distancia medida desde el Plano hasta el origen, a lo largo de la normal del Plano.
         /// </summary>
-        public float distance
+        public float Distance
         {
-            get { return _distance; }
-            set { _distance = value; }
+            get { return distance; }
+            set { distance = value; }
+        }
+
+        public float Area
+        {
+            get { return area; }
+            set { area = value; }
         }
 
         /// <summary>
@@ -32,8 +37,9 @@ namespace CustomMath
         /// <param name="inPoint"></param>
         public Plane(Vec3 inNormal, Vec3 inPoint)
         {
-            _normal = Vec3.Normalize(inNormal);
-            _distance = -Vec3.Dot(inNormal, inPoint);
+            normal = Vec3.Normalize(inNormal);
+            distance = -Vec3.Dot(inNormal, inPoint);
+            area = distance;
         }
 
         /// <summary>
@@ -43,8 +49,9 @@ namespace CustomMath
         /// <param name="distance"></param>
         public Plane(Vec3 inNormal, float distance)
         {
-            _normal = Vec3.Normalize(inNormal);
-            _distance = distance;
+            normal = Vec3.Normalize(inNormal);
+            this.distance = distance;
+            area = distance;
         }
 
         /// <summary>
@@ -55,8 +62,9 @@ namespace CustomMath
         /// <param name="vecC"></param>
         public Plane(Vec3 vecA, Vec3 vecB, Vec3 vecC)
         {
-            _normal = Vec3.Normalize(Vec3.Cross(vecB-vecA, vecC-vecA));
-            _distance = -Vec3.Dot(_normal, vecA);
+            normal = Vec3.Normalize(Vec3.Cross(vecB-vecA, vecC-vecA));
+            distance = -Vec3.Dot(normal, vecA);
+            area = Vec3.Cross(vecA - vecB, vecA - vecC).magnitude * .5f; // El producto cruz entre 2 vectores te da un vector cuya magnitud es el area de un paralelogramo y la mitad del mismo es un triangulo que lo forma
         }
 
         /// <summary>
@@ -67,8 +75,8 @@ namespace CustomMath
         /// <param name="inPoint"> Un punto que se encuentra en el plano.</param>
         public void SetNormalAndPosition(Vec3 inNormal, Vec3 inPoint)
         {
-            _normal = Vec3.Normalize(inNormal);
-            _distance = -Vec3.Dot(inNormal, inPoint);
+            normal = Vec3.Normalize(inNormal);
+            distance = -Vec3.Dot(inNormal, inPoint);
         }
 
         /// <summary>
@@ -80,8 +88,8 @@ namespace CustomMath
         /// <param name="vecC"> Tercer punto en el sentido de las agujas del reloj.</param>
         public void Set3Points(Vec3 vectA, Vec3 vecB, Vec3 vecC)
         {
-            _normal = Vec3.Normalize(Vec3.Cross(vecB - vectA, vecC - vectA));
-            _distance = -Vec3.Dot(_normal, vectA);
+            normal = Vec3.Normalize(Vec3.Cross(vecB - vectA, vecC - vectA));
+            distance = -Vec3.Dot(normal, vectA);
         }
 
         /// <summary>
@@ -89,21 +97,21 @@ namespace CustomMath
         /// </summary>
         public void Flip()
         {
-            _normal = -_normal;
-            _distance = -_distance;
+            normal = -normal;
+            distance = -distance;
         }
 
         /// <summary>
         /// Devuelve una copia del plano que mira en la dirección opuesta.
         /// </summary>
-        public Plane flipped => new Plane(-_normal, -_distance);
+        public Plane flipped => new Plane(-normal, -distance);
 
         
         /// <summary>
         /// Mueve el plano en el espacio, tomando como referencia un vector.
         /// </summary>
         /// <param name="translation">El desplazamiento en el espacio para mover el plano</param>
-        public void Translate(Vec3 translation) => _distance += Vec3.Dot(_normal, translation);
+        public void Translate(Vec3 translation) => distance += Vec3.Dot(normal, translation);
 
         /// <summary>
         /// Devuelve una copia del plano con la posicion modificada.
@@ -112,7 +120,7 @@ namespace CustomMath
         /// <param name="translation">El desplazamiento para mover el plano.</param>
         /// <returns>The translated plane.</returns>
         public static Plane Translate(Plane plane, Vec3 translation) =>
-            new Plane(plane.normal, plane.distance += Vec3.Dot(plane.normal, translation));
+            new Plane(plane.Normal, plane.Distance += Vec3.Dot(plane.Normal, translation));
 
         /// <summary>
         /// Devuelve el punto mas cercano de un plano en base a una posicion dada.
@@ -121,8 +129,8 @@ namespace CustomMath
         /// <returns>Un punto en el plano que está más cerca de una posicion.</returns>
         public Vec3 ClosestPointOnPlane(Vec3 point)
         {
-            float dot = Vec3.Dot(_normal, point) + _distance;
-            return point - _normal * dot;
+            float dot = Vec3.Dot(normal, point) + distance;
+            return point - normal * dot;
         }
 
         /// <summary>
@@ -130,14 +138,14 @@ namespace CustomMath
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public float GetDistanceToPoint(Vec3 point) => Vec3.Dot(_normal, point) + _distance;
+        public float GetDistanceToPoint(Vec3 point) => Vec3.Dot(normal, point) + distance;
 
         /// <summary>
         /// Chequea si hay un punto del lado positivo del plano.
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public bool GetSide(Vec3 point) => (double)Vec3.Dot(_normal, point) + (double)_distance > 0.0;
+        public bool GetSide(Vec3 point) => (double)Vec3.Dot(normal, point) + (double)distance > 0.0;
 
         /// <summary>
         /// Chequea si estan los 2 puntos del mismo lado del plano.
@@ -154,6 +162,6 @@ namespace CustomMath
                    (double)distanceToPoint1 <= 0.0 && (double)distanceToPoint2 <= 0.0;
         }
 
-        public override string ToString() => $"normal:{_normal}, distance:{_distance}";
+        public override string ToString() => $"normal:{normal}, distance:{distance}";
     }
 }

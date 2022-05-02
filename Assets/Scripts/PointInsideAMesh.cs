@@ -26,6 +26,8 @@ public class PointInsideAMesh : MonoBehaviour
         meshRend = GetComponent<MeshRenderer>();
         meshFilter = GetComponent<MeshFilter>();
         meshIndices = meshFilter.mesh.GetIndices(0);
+        
+        boundingBox = CalculateBoundingBox(RotateAndScale(meshFilter.mesh.vertices, transform));
     }
 
     private void Update()
@@ -50,7 +52,8 @@ public class PointInsideAMesh : MonoBehaviour
         
         // TODO 1.Crear un Bounding Box, 2.Reordenar caras de Mayor a menor, 3.Tener en cuenta la escala del objeto.
         
-        boundingBox = CalculateBoundingBox(RotateAndScale(mesh.vertices, transform));
+        if(transform.hasChanged) boundingBox = CalculateBoundingBox(RotateAndScale(mesh.vertices, transform));
+        
         isBoundingColliding = boundingBox.Contains(point);
         
         if (isBoundingColliding)
@@ -73,12 +76,12 @@ public class PointInsideAMesh : MonoBehaviour
             }
         
             // Ordeno de mayor a menor
-            planes = planes.OrderByDescending(plane1 => plane1.distance).ToList();
+            planes = planes.OrderByDescending(plane1 => plane1.Area).ToList();
 
             // Checkear los planos
             foreach (Plane plane in planes)
             {
-                if (plane.SameSide(pos + plane.normal, point)) return false;
+                if (plane.SameSide(pos + plane.Normal, point)) return false;
             }
         
             return true;
@@ -177,7 +180,7 @@ public class PointInsideAMesh : MonoBehaviour
 
                         Plane plane = new Plane(v1, v2, v3);
 
-                        Vector3 normal = new Vector3(plane.normal.x, plane.normal.y, plane.normal.z);
+                        Vector3 normal = new Vector3(plane.Normal.x, plane.Normal.y, plane.Normal.z);
                     
                         Gizmos.color = Color.green;
                         Gizmos.DrawLine(transform.position, normal + transform.position);
