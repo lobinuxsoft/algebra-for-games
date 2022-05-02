@@ -13,13 +13,17 @@ public class PointInsideAMesh : MonoBehaviour
     [SerializeField] Color normalColor = Color.cyan;
     [SerializeField] Color colisionColor = Color.red;
 
-    [SerializeField] private bool isColliding;
-    
+    [SerializeField] private bool isBoundingColliding;
+    [SerializeField] private bool isMeshColliding;
+
+    private BoundingBox boundingBox;
     private MeshFilter meshFilter;
+    private MeshRenderer meshRend;
     private int[] meshIndices;
 
     private void Awake()
     {
+        meshRend = GetComponent<MeshRenderer>();
         meshFilter = GetComponent<MeshFilter>();
         meshIndices = meshFilter.mesh.GetIndices(0);
     }
@@ -28,7 +32,7 @@ public class PointInsideAMesh : MonoBehaviour
     {
         if (meshFilter && point)
         {
-            isColliding = DetectCollision(meshFilter.mesh, new Vec3(point.position));
+            isMeshColliding = DetectCollision(meshFilter.mesh, new Vec3(point.position));
         }
     }
 
@@ -46,33 +50,41 @@ public class PointInsideAMesh : MonoBehaviour
         
         // TODO 1.Crear un Bounding Box, 2.Reordenar caras de Mayor a menor, 3.Tener en cuenta la escala del objeto.
         
-        // Crear planos y meterlos en una lista
-        for (int i = 0; i < meshIndices.Length; i += 3)
-        {
-            Vec3 v1 = new Vec3(mesh.vertices[meshIndices[i]]);
-            Vec3 v2 = new Vec3(mesh.vertices[meshIndices[i + 1]]);
-            Vec3 v3 = new Vec3(mesh.vertices[meshIndices[i + 2]]);
-            
-            // Paso las coordenadas locales a globales...
-            v1 = FromLocalToWolrd(v1, transform);
-            v2 = FromLocalToWolrd(v2, transform);
-            v3 = FromLocalToWolrd(v3, transform);
-            
-            Plane plane = new Plane(v1, v2, v3);
-
-            planes.Add(plane);
-        }
+        boundingBox = CalculateBoundingBox(RotateAndScale(mesh.vertices, transform));
+        isBoundingColliding = boundingBox.Contains(point);
         
-        // Ordeno de mayor a menor
-        planes = planes.OrderByDescending(plane1 => plane1.distance).ToList();
-
-        // Checkear los planos
-        foreach (Plane plane in planes)
+        if (isBoundingColliding)
         {
-            if (plane.SameSide(pos + plane.normal, point)) return false;
-        }
+            // Crear planos y meterlos en una lista
+            for (int i = 0; i < meshIndices.Length; i += 3)
+            {
+                Vec3 v1 = new Vec3(mesh.vertices[meshIndices[i]]);
+                Vec3 v2 = new Vec3(mesh.vertices[meshIndices[i + 1]]);
+                Vec3 v3 = new Vec3(mesh.vertices[meshIndices[i + 2]]);
+            
+                // Paso las coordenadas locales a globales...
+                v1 = FromLocalToWolrd(v1, transform);
+                v2 = FromLocalToWolrd(v2, transform);
+                v3 = FromLocalToWolrd(v3, transform);
+            
+                Plane plane = new Plane(v1, v2, v3);
+
+                planes.Add(plane);
+            }
         
-        return true;
+            // Ordeno de mayor a menor
+            planes = planes.OrderByDescending(plane1 => plane1.distance).ToList();
+
+            // Checkear los planos
+            foreach (Plane plane in planes)
+            {
+                if (plane.SameSide(pos + plane.normal, point)) return false;
+            }
+        
+            return true;
+        }
+
+        return false;
     }
     
     /// <summary>
@@ -87,84 +99,94 @@ public class PointInsideAMesh : MonoBehaviour
 
         result = new Vec3(point.x * transformRef.localScale.x, point.y * transformRef.localScale.y, point.z * transformRef.localScale.z);
         
-        result *= transformRef.localRotation;
+        result = new Vec3(transformRef.localRotation * result);
 
         return result + new Vec3(transformRef.position);
     }
 
-    private Vector3[] CalculateBoundingBox(Vector3[] vertices)
+    private Vec3[] RotateAndScale(Vector3[] points, Transform transformRef)
     {
-        Vector3[] result = new Vector3[6];
+        Vec3[] result = new Vec3[points.Length];
+        for (int i = 0; i < points.Length; i++)
+        {
+            result[i] = new Vec3(points[i].x * transformRef.localScale.x, points[i].y * transformRef.localScale.y, points[i].z * transformRef.localScale.z);
+            result[i] = new Vec3(transformRef.localRotation * result[i]);
+        }
 
-        Vector3 left = Vector3.zero;
-        Vector3 right = Vector3.zero;
-        Vector3 forward = Vector3.zero;
-        Vector3 backward = Vector3.zero;
-        Vector3 up = Vector3.zero;
-        Vector3 down = Vector3.zero;
+        return result;
+    }
+
+    private BoundingBox CalculateBoundingBox(Vec3[] vertices)
+    {
+        Vec3 left = Vec3.Zero;
+        Vec3 right = Vec3.Zero;
+        Vec3 forward = Vec3.Zero;
+        Vec3 backward = Vec3.Zero;
+        Vec3 up = Vec3.Zero;
+        Vec3 down = Vec3.Zero;
 
         foreach (var vert in vertices)
         {
-            if (vert.x < left.x) left = -vert.x * Vector3.left;
-            if (vert.x > right.x) right = vert.x * Vector3.right;
-            if (vert.z > forward.z) forward = vert.z * Vector3.forward;
-            if (vert.z < backward.z) backward = -vert.z * Vector3.back;
-            if (vert.y > up.y) up = vert.y * Vector3.up;
-            if (vert.y < down.y) down = -vert.y * Vector3.down;
+            if (vert.x < left.x) left = -vert.x * Vec3.Left;
+            if (vert.x > right.x) right = vert.x * Vec3.Right;
+            if (vert.z > forward.z) forward = vert.z * Vec3.Forward;
+            if (vert.z < backward.z) backward = -vert.z * Vec3.Back;
+            if (vert.y > up.y) up = vert.y * Vec3.Up;
+            if (vert.y < down.y) down = -vert.y * Vec3.Down;
         }
-        
-        result[0] = left;
-        result[1] = right;
-        result[2] = forward;
-        result[3] = backward;
-        result[4] = up;
-        result[5] = down;
 
-        return result;
+        Vec3 center = new Vec3(transform.position);
+        Vec3 size = Vec3.Zero;
+        size.x = Vec3.Distance(left, right);
+        size.y = Vec3.Distance(up, down);
+        size.z = Vec3.Distance(forward, backward);
+        
+
+        return new BoundingBox(center, size);
     }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        Color result = isColliding ? colisionColor : normalColor;
-        
-        Gizmos.color = result;
-        if(meshFilter) Gizmos.DrawWireMesh(meshFilter.mesh, transform.position, transform.rotation);
+        Color result = isMeshColliding ? colisionColor : normalColor;
 
-        result.a = .5f;
-        Gizmos.color = result;
-        
         if (meshFilter)
         {
-            Gizmos.DrawMesh(meshFilter.mesh, transform.position, transform.rotation);
+            Gizmos.color = result;
+            
+            BoundingBox bound = CalculateBoundingBox(RotateAndScale(meshFilter.mesh.vertices, transform));
 
-            if (showPlaneNormals)
+            Gizmos.DrawWireCube(bound.Center, bound.Size);
+
+            if (isBoundingColliding)
             {
-                for (int i = 0; i < meshFilter.mesh.GetIndices(0).Length; i += 3)
+                meshRend.material.color = result;
+
+                if (showPlaneNormals)
                 {
-                    Vec3 v1 = new Vec3(meshFilter.mesh.vertices[meshFilter.mesh.GetIndices(0)[i]]);
-                    Vec3 v2 = new Vec3(meshFilter.mesh.vertices[meshFilter.mesh.GetIndices(0)[i + 1]]);
-                    Vec3 v3 = new Vec3(meshFilter.mesh.vertices[meshFilter.mesh.GetIndices(0)[i + 2]]);
+                    for (int i = 0; i < meshFilter.mesh.GetIndices(0).Length; i += 3)
+                    {
+                        Vec3 v1 = new Vec3(meshFilter.mesh.vertices[meshFilter.mesh.GetIndices(0)[i]]);
+                        Vec3 v2 = new Vec3(meshFilter.mesh.vertices[meshFilter.mesh.GetIndices(0)[i + 1]]);
+                        Vec3 v3 = new Vec3(meshFilter.mesh.vertices[meshFilter.mesh.GetIndices(0)[i + 2]]);
                 
-                    // Paso las coordenadas locales a globales...
-                    v1 = FromLocalToWolrd(v1, transform);
-                    v2 = FromLocalToWolrd(v2, transform);
-                    v3 = FromLocalToWolrd(v3, transform);
+                        // Paso las coordenadas locales a globales...
+                        v1 = FromLocalToWolrd(v1, transform);
+                        v2 = FromLocalToWolrd(v2, transform);
+                        v3 = FromLocalToWolrd(v3, transform);
 
-                    Plane plane = new Plane(v1, v2, v3);
+                        Plane plane = new Plane(v1, v2, v3);
 
-                    Vector3 normal = new Vector3(plane.normal.x, plane.normal.y, plane.normal.z);
+                        Vector3 normal = new Vector3(plane.normal.x, plane.normal.y, plane.normal.z);
                     
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawLine(transform.position, normal + transform.position);
+                        Gizmos.color = Color.green;
+                        Gizmos.DrawLine(transform.position, normal + transform.position);
+                    }
                 }
             }
-
-            Vector3[] bound = CalculateBoundingBox(meshFilter.mesh.vertices);
-
-            for (int i = 0; i < bound.Length; i++)
+            else
             {
-                Gizmos.DrawSphere(bound[i], pointGizmosSize);
+                meshRend.material.color = Color.white;
             }
         }
 

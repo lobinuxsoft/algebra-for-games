@@ -125,32 +125,6 @@ namespace CustomMath
             return new Vector2(vec3.x, vec3.y);
         }
         
-        /// <summary>
-        /// Lean no preguntes porque no explicaste Quaterniones xD
-        /// </summary>
-        /// <param name="point"></param>
-        /// <param name="rotation"></param>
-        /// <returns></returns>
-        public static Vec3 operator *(Vec3 point, Quaternion rotation)
-        {
-            float x1 = rotation.x * 2f;
-            float y1 = rotation.y * 2f;
-            float z1 = rotation.z * 2f;
-            float x2 = rotation.x * x1;
-            float y2 = rotation.y * y1;
-            float z2 = rotation.z * z1;
-            float xy = rotation.x * y1;
-            float xz = rotation.x * z1;
-            float yz = rotation.y * z1;
-            float wx = rotation.w * x1;
-            float wy = rotation.w * y1;
-            float wz = rotation.w * z1;
-            Vec3 vec3;
-            vec3.x = (float) ((1.0 - ((double) y2 + (double) z2)) * (double) point.x + ((double) xy - (double) wz) * (double) point.y + ((double) xz + (double) wy) * (double) point.z);
-            vec3.y = (float) (((double) xy + (double) wz) * (double) point.x + (1.0 - ((double) x2 + (double) z2)) * (double) point.y + ((double) yz - (double) wx) * (double) point.z);
-            vec3.z = (float) (((double) xz - (double) wy) * (double) point.x + ((double) yz + (double) wx) * (double) point.y + (1.0 - ((double) x2 + (double) y2)) * (double) point.z);
-            return vec3;
-        }
         #endregion
 
         #region Functions
