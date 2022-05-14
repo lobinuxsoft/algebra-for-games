@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CustomMath;
+using UnityEditor;
 using UnityEngine;
 using Plane = CustomMath.Plane;
 
@@ -8,7 +9,6 @@ using Plane = CustomMath.Plane;
 public class PointInsideAMesh : MonoBehaviour
 {
     [SerializeField] private Transform point;
-    [SerializeField] private bool showPlaneNormals;
     [SerializeField, Range(0, 1)] private float pointGizmosSize = .25f;
     [SerializeField] Color normalColor = Color.cyan;
     [SerializeField] Color colisionColor = Color.red;
@@ -20,21 +20,23 @@ public class PointInsideAMesh : MonoBehaviour
     private MeshFilter meshFilter;
     private MeshRenderer meshRend;
     private int[] meshIndices;
+    
+    List<Plane> planes = new List<Plane>();
 
     private void Awake()
     {
         meshRend = GetComponent<MeshRenderer>();
         meshFilter = GetComponent<MeshFilter>();
-        meshIndices = meshFilter.mesh.GetIndices(0);
+        meshIndices = meshFilter.sharedMesh.GetIndices(0);
         
-        boundingBox = CalculateBoundingBox(RotateAndScale(meshFilter.mesh.vertices, transform));
+        boundingBox = CalculateBoundingBox(RotateAndScale(meshFilter.sharedMesh.vertices, transform));
     }
 
     private void Update()
     {
         if (meshFilter && point)
         {
-            isMeshColliding = DetectCollision(meshFilter.mesh, new Vec3(point.position));
+            isMeshColliding = DetectCollision(meshFilter.sharedMesh, new Vec3(point.position));
         }
     }
 
@@ -47,13 +49,14 @@ public class PointInsideAMesh : MonoBehaviour
     /// <returns></returns>
     bool DetectCollision(Mesh mesh, Vec3 point)
     {
-        List<Plane> planes = new List<Plane>();
+        planes.Clear();
+        
         Vec3 pos = new Vec3(transform.position);
-        
-        // TODO 1.Crear un Bounding Box, 2.Reordenar caras de Mayor a menor, 3.Tener en cuenta la escala del objeto.
-        
+
+        // TODO 3.Tener en cuenta la escala del objeto.
+
         if(transform.hasChanged) boundingBox = CalculateBoundingBox(RotateAndScale(mesh.vertices, transform));
-        
+
         isBoundingColliding = boundingBox.Contains(point);
         
         if (isBoundingColliding)
@@ -64,12 +67,12 @@ public class PointInsideAMesh : MonoBehaviour
                 Vec3 v1 = new Vec3(mesh.vertices[meshIndices[i]]);
                 Vec3 v2 = new Vec3(mesh.vertices[meshIndices[i + 1]]);
                 Vec3 v3 = new Vec3(mesh.vertices[meshIndices[i + 2]]);
-            
+
                 // Paso las coordenadas locales a globales...
                 v1 = FromLocalToWolrd(v1, transform);
                 v2 = FromLocalToWolrd(v2, transform);
                 v3 = FromLocalToWolrd(v3, transform);
-            
+
                 Plane plane = new Plane(v1, v2, v3);
 
                 planes.Add(plane);
@@ -81,7 +84,7 @@ public class PointInsideAMesh : MonoBehaviour
             // Checkear los planos
             foreach (Plane plane in planes)
             {
-                if (plane.SameSide(pos + plane.Normal, point)) return false;
+                if (plane.SameSide(FromLocalToWolrd(plane.Normal, transform) , point)) return false;
             }
         
             return true;
@@ -100,10 +103,16 @@ public class PointInsideAMesh : MonoBehaviour
     {
         Vec3 result = Vec3.Zero;
 
-        result = new Vec3(point.x * transformRef.localScale.x, point.y * transformRef.localScale.y, point.z * transformRef.localScale.z);
-        
-        result = new Vec3(transformRef.localRotation * result);
+        // Primero lo escalo y despues lo roto
+        // result = new Vec3(point.x * transformRef.localScale.x, point.y * transformRef.localScale.y, point.z * transformRef.localScale.z);
+        //
+        // result = new Vec3(transformRef.localRotation * result);
 
+        // Primero lo roto y despues lo escalo
+        result = new Vec3(transformRef.localRotation * point);
+        
+        result = new Vec3(result.x * transformRef.localScale.x, result.y * transformRef.localScale.y, result.z * transformRef.localScale.z);
+        
         return result + new Vec3(transformRef.position);
     }
 
@@ -157,39 +166,25 @@ public class PointInsideAMesh : MonoBehaviour
         {
             Gizmos.color = result;
             
-            BoundingBox bound = CalculateBoundingBox(RotateAndScale(meshFilter.mesh.vertices, transform));
+            BoundingBox bound = CalculateBoundingBox(RotateAndScale(meshFilter.sharedMesh.vertices, transform));
 
             Gizmos.DrawWireCube(bound.Center, bound.Size);
 
             if (isBoundingColliding)
             {
                 meshRend.material.color = result;
-
-                if (showPlaneNormals)
-                {
-                    for (int i = 0; i < meshFilter.mesh.GetIndices(0).Length; i += 3)
-                    {
-                        Vec3 v1 = new Vec3(meshFilter.mesh.vertices[meshFilter.mesh.GetIndices(0)[i]]);
-                        Vec3 v2 = new Vec3(meshFilter.mesh.vertices[meshFilter.mesh.GetIndices(0)[i + 1]]);
-                        Vec3 v3 = new Vec3(meshFilter.mesh.vertices[meshFilter.mesh.GetIndices(0)[i + 2]]);
-                
-                        // Paso las coordenadas locales a globales...
-                        v1 = FromLocalToWolrd(v1, transform);
-                        v2 = FromLocalToWolrd(v2, transform);
-                        v3 = FromLocalToWolrd(v3, transform);
-
-                        Plane plane = new Plane(v1, v2, v3);
-
-                        Vector3 normal = new Vector3(plane.Normal.x, plane.Normal.y, plane.Normal.z);
-                    
-                        Gizmos.color = Color.green;
-                        Gizmos.DrawLine(transform.position, normal + transform.position);
-                    }
-                }
             }
             else
             {
                 meshRend.material.color = Color.white;
+            }
+
+            if (planes.Count > 0)
+            {
+                foreach (var plane in planes)
+                {
+                    Gizmos.DrawSphere(FromLocalToWolrd(plane.Normal, transform), .05f);
+                }
             }
         }
 

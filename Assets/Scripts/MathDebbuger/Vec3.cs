@@ -12,7 +12,9 @@ namespace CustomMath
         public float z;
 
         public float sqrMagnitude { get { return x * x + y * y + z * z; } }
-        public Vector3 normalized { get { return Normalize(this); } }
+        
+        public Vec3 normalized { get { return Normalize(this); } }
+        
         public float magnitude { get { return Magnitude(this); } }
         #endregion
 

@@ -64,7 +64,10 @@ namespace CustomMath
         {
             normal = Vec3.Normalize(Vec3.Cross(vecB-vecA, vecC-vecA));
             distance = -Vec3.Dot(normal, vecA);
-            area = Vec3.Cross(vecA - vecB, vecA - vecC).magnitude * .5f; // El producto cruz entre 2 vectores te da un vector cuya magnitud es el area de un paralelogramo y la mitad del mismo es un triangulo que lo forma
+            
+            // El producto cruz entre 2 vectores te da un vector cuya magnitud es el area de un paralelogramo y la mitad del mismo es un triangulo que lo forma
+            //area = Vec3.Cross(vecA - vecB, vecA - vecC).magnitude * .5f; 
+            area = Vec3.Cross(vecB - vecA, vecC - vecA).magnitude * .5f; 
         }
 
         /// <summary>
