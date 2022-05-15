@@ -229,7 +229,17 @@ namespace CustomMath
         // https://www.youtube.com/watch?v=NOBhfEHOYZs este se entiende mejor
         public static Vec3 Reflect(Vec3 inDirection, Vec3 inNormal) 
         {
-            return -2f * Dot(inNormal, inDirection) * inNormal + inDirection;
+            // Devuelve la reflexion del vector
+            return -2 * Dot(inNormal, inDirection) * inNormal + inDirection;
+
+            // Devuelve la proyeccion del vector de incidencia sobre el normal pero con el doble se su magnitud.
+            //return -2 * Dot(inNormal, inDirection) * inNormal;
+
+            // Me devuelve la proyeccion en el vector normal del vector de incidencia.
+            //return -Dot(inNormal, inDirection) * inNormal;
+
+            // Me devuelve un vector (con el sentido y magnitud), teniendo en cuenta la normal y el vector de incidencia
+            //return Dot(inNormal, inDirection) * inNormal;
         }
 
         public static Vec3 Normalize(Vec3 vec3)
