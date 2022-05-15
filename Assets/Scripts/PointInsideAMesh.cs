@@ -50,8 +50,6 @@ public class PointInsideAMesh : MonoBehaviour
     bool DetectCollision(Mesh mesh, Vec3 point)
     {
         planes.Clear();
-        
-        Vec3 pos = new Vec3(transform.position);
 
         // TODO 3.Tener en cuenta la escala del objeto.
 
@@ -69,11 +67,17 @@ public class PointInsideAMesh : MonoBehaviour
                 Vec3 v3 = new Vec3(mesh.vertices[meshIndices[i + 2]]);
 
                 // Paso las coordenadas locales a globales...
-                v1 = FromLocalToWolrd(v1, transform);
-                v2 = FromLocalToWolrd(v2, transform);
-                v3 = FromLocalToWolrd(v3, transform);
+                //v1 = FromLocalToWolrd(v1, transform);
+                //v2 = FromLocalToWolrd(v2, transform);
+                //v3 = FromLocalToWolrd(v3, transform);
+
+                v1 = new Vec3(transform.position + transform.rotation * Vec3.Scale(v1, new Vec3(transform.localScale)));
+                v2 = new Vec3(transform.position + transform.rotation * Vec3.Scale(v2, new Vec3(transform.localScale)));
+                v3 = new Vec3(transform.position + transform.rotation * Vec3.Scale(v3, new Vec3(transform.localScale)));
 
                 Plane plane = new Plane(v1, v2, v3);
+
+                //plane.Translate(new Vec3(transform.position));
 
                 planes.Add(plane);
             }
@@ -101,19 +105,7 @@ public class PointInsideAMesh : MonoBehaviour
     /// <returns></returns>
     private Vec3 FromLocalToWolrd(Vec3 point, Transform transformRef)
     {
-        Vec3 result = Vec3.Zero;
-
-        // Primero lo escalo y despues lo roto
-        // result = new Vec3(point.x * transformRef.localScale.x, point.y * transformRef.localScale.y, point.z * transformRef.localScale.z);
-        //
-        // result = new Vec3(transformRef.localRotation * result);
-
-        // Primero lo roto y despues lo escalo
-        result = new Vec3(transformRef.localRotation * point);
-        
-        result = new Vec3(result.x * transformRef.localScale.x, result.y * transformRef.localScale.y, result.z * transformRef.localScale.z);
-        
-        return result + new Vec3(transformRef.position);
+        return new Vec3(transformRef.position + transformRef.rotation * Vec3.Scale(point, new Vec3(transformRef.localScale)));
     }
 
     private Vec3[] RotateAndScale(Vector3[] points, Transform transformRef)
@@ -121,8 +113,7 @@ public class PointInsideAMesh : MonoBehaviour
         Vec3[] result = new Vec3[points.Length];
         for (int i = 0; i < points.Length; i++)
         {
-            result[i] = new Vec3(points[i].x * transformRef.localScale.x, points[i].y * transformRef.localScale.y, points[i].z * transformRef.localScale.z);
-            result[i] = new Vec3(transformRef.localRotation * result[i]);
+            result[i] = new Vec3(transformRef.rotation * Vec3.Scale(new Vec3(points[i]), new Vec3(transformRef.localScale)));
         }
 
         return result;

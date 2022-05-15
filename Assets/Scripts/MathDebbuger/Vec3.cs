@@ -251,6 +251,8 @@ namespace CustomMath
             z = newZ;
         }
 
+        public static Vec3 Scale(Vec3 a, Vec3 b) => new Vec3(a.x * b.x, a.y * b.y, a.z * b.z);
+
         public void Scale(Vec3 vec3)
         {
             x *= vec3.x;
