@@ -38,5 +38,7 @@ public class ReflectTest : MonoBehaviour
         Handles.matrix = inDir.localToWorldMatrix;
         Handles.DrawDottedLine(Vector3.zero, rayInDir, 1f);
         Handles.ArrowHandleCap(0, Vector3.zero, Quaternion.LookRotation(rayInDir), 1f, EventType.Repaint);
+
+        Handles.Label(Vector3.zero, $"Distance= {-Vector3.Dot(normal.forward, inDir.position)}");
     }
 }
