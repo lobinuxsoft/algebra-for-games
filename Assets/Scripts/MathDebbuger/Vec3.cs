@@ -188,12 +188,12 @@ namespace CustomMath
         public static Vec3 Lerp(Vec3 vectorA, Vec3 vectorB, float time)
         {
             time = Mathf.Clamp01(time);
-            return new Vec3(vectorA.x + (vectorB.x - vectorA.x) * time, vectorA.y + (vectorB.y - vectorA.y) * time, vectorA.z + (vectorB.z - vectorA.z) * time);
+            return vectorA + (vectorB - vectorA) * time;
         }
 
         public static Vec3 LerpUnclamped(Vec3 vectorA, Vec3 vectorB, float time)
         {
-            return new Vec3(vectorA.x + (vectorB.x - vectorA.x) * time, vectorA.y + (vectorB.y - vectorA.y) * time, vectorA.z + (vectorB.z - vectorA.z) * time);
+            return vectorA + (vectorB - vectorA) * time;
         }
 
         public static Vec3 Max(Vec3 vectorA, Vec3 vectorB)
