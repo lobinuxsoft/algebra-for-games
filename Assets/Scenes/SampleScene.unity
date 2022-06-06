@@ -638,7 +638,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8ee808e662ca4e4ebbba45a35646bfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  quaternion1: {x: 0, y: 0, z: 0, w: 0}
+  euler: {x: 0, y: 0, z: 0}
+  quaternion1: {x: 0, y: 0, z: 0, w: 1}
   quaternion2: {x: 0, y: 0, z: 0, w: 0}
 --- !u!65 &690184346
 BoxCollider:

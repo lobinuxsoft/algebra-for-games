@@ -122,6 +122,11 @@ namespace CustomMath
             return new Vector3(vec3.x, vec3.y, vec3.z);
         }
 
+        public static implicit operator Vec3(Vector3 vector3)
+        {
+            return new Vec3(vector3.x, vector3.y, vector3.z);
+        }
+
         public static implicit operator Vector2(Vec3 vec3)
         {
             return new Vector2(vec3.x, vec3.y);
@@ -132,7 +137,7 @@ namespace CustomMath
         #region Functions
         public override string ToString()
         {
-            return "X = " + x.ToString() + "   Y = " + y.ToString() + "   Z = " + z.ToString();
+            return $"({x},{y},{z})";
         }
 
         public static float Angle(Vec3 from, Vec3 to)

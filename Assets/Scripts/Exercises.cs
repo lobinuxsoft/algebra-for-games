@@ -17,9 +17,9 @@ public class Exercises : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        MathDebbuger.Vector3Debugger.AddVector(transform.position, transform.position + vecA, Color.red, "VectorA");
-        MathDebbuger.Vector3Debugger.AddVector(transform.position, transform.position + vecB, Color.green, "VectorB");
-        MathDebbuger.Vector3Debugger.AddVector(transform.position, transform.position + vecC, Color.blue, "VectorC");
+        MathDebbuger.Vector3Debugger.AddVector(transform.position, transform.position + (Vector3)vecA, Color.red, "VectorA");
+        MathDebbuger.Vector3Debugger.AddVector(transform.position, transform.position + (Vector3)vecB, Color.green, "VectorB");
+        MathDebbuger.Vector3Debugger.AddVector(transform.position, transform.position + (Vector3)vecC, Color.blue, "VectorC");
         MathDebbuger.Vector3Debugger.EnableEditorView();
     }
 
@@ -75,8 +75,8 @@ public class Exercises : MonoBehaviour
                 break;
         }
 
-        MathDebbuger.Vector3Debugger.UpdatePosition("VectorA", transform.position, transform.position + vecA);
-        MathDebbuger.Vector3Debugger.UpdatePosition("VectorB", transform.position, transform.position + vecB);
-        MathDebbuger.Vector3Debugger.UpdatePosition("VectorC", transform.position, transform.position + vecC);
+        MathDebbuger.Vector3Debugger.UpdatePosition("VectorA", transform.position, transform.position + (Vector3)vecA);
+        MathDebbuger.Vector3Debugger.UpdatePosition("VectorB", transform.position, transform.position + (Vector3)vecB);
+        MathDebbuger.Vector3Debugger.UpdatePosition("VectorC", transform.position, transform.position + (Vector3)vecC);
     }
 }

@@ -1,14 +1,37 @@
+using CustomMath;
 using UnityEngine;
 
 public class QuatRot3D : MonoBehaviour
 {
+    [SerializeField] Vector3 euler;
     [SerializeField] Quaternion quaternion1;
     [SerializeField] Quaternion quaternion2;
 
     // Update is called once per frame
     void Update()
     {
-        transform.rotation = MultiplicacionQuaternion(quaternion1, quaternion2);
+        //transform.rotation = MultiplicacionQuaternion(quaternion1, quaternion2);
+
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+
+            Debug.Log($"Multiplicacion de Quaterniones Unity: {quaternion1 * quaternion2}");
+
+            Quat quat1 = quaternion1;
+            Quat quat2 = quaternion2;
+
+            Debug.Log($"Multiplicacion de Quat Custom: {quat1 * quat2}");
+
+            Debug.Log($"Quaternion a Euler Unity: {quaternion1.eulerAngles}");
+            Debug.Log($"Quat a Euler Custom: {quat1.EulerAngles}");
+
+            quaternion1.eulerAngles = euler;
+            Debug.Log($"Euler to Quaternion Unity: {quaternion1}");
+
+            quat1.EulerAngles = euler;
+            Debug.Log($"Euler to Quaternion Unity: {quat1}");
+        }
     }
 
     Quaternion MultiplicacionQuaternion(Quaternion q1, Quaternion q2)

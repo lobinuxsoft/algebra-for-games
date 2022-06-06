@@ -54,16 +54,42 @@ namespace CustomMath
             return new Quat(x, y, z, w); // Choclo final xD
         }
 
+        public static implicit operator Quaternion(Quat quat)
+        {
+            return new Quaternion(quat.x, quat.y, quat.z, quat.w);
+        }
+
+        public static implicit operator Quat(Quaternion quaternion)
+        {
+            return new Quat(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+        }
+
         #endregion
 
         #region Functions
 
-        //public Vec3 EulerAngles
-        //{
-        //    get;
-        //    set;
-        //}
+        /// <summary>
+        /// Devuelve los angulos de euler de un <see cref="Quat"/>
+        /// y tambien se le puede asignar un <see cref="Vec3"/> como angulos
+        /// </summary>
+        public Vec3 EulerAngles
+        {
+            get
+            {
+                return ToEulerAngles(this) * Mathf.Rad2Deg;
+            }
 
+            set
+            {
+                this = ToQuaternion(value * Mathf.Deg2Rad);
+            }
+        }
+
+        /// <summary>
+        /// Transforma el <see cref="Vec3"/> en un <see cref="Quat"/>.
+        /// </summary>
+        /// <param name="vec3"></param>
+        /// <returns></returns>
         private Quat ToQuaternion(Vec3 vec3) // yaw (Z), pitch (Y), roll (X)
         {
             float cy = Mathf.Cos(vec3.z * .5f);
@@ -81,6 +107,35 @@ namespace CustomMath
             quat.z = cr * cp * sy - sr * sp * cy;
 
             return quat;
+        }
+
+        /// <summary>
+        /// Transforma el <see cref="Quat"/> en un <see cref="Vec3"/>.
+        /// </summary>
+        /// <param name="quat"></param>
+        /// <returns></returns>
+        private Vec3 ToEulerAngles(Quat quat)
+        {
+            Vec3 angles;
+
+            // roll (x-axis rotation)
+            float sinr_cosp = 2 * (quat.w * quat.x + quat.y * quat.z);
+            float cosr_cosp = 1 - 2 * (quat.x * quat.x + quat.y * quat.y);
+            angles.x = Mathf.Atan2(sinr_cosp, cosr_cosp);
+
+            // pitch (y-axis rotation)
+            float sinp = 2 * (quat.w * quat.y - quat.z * quat.x);
+            if (Mathf.Abs(sinp) >= 1)
+                angles.y = (Mathf.PI / 2) * Mathf.Sign(sinp); // use 90 degrees if out of range
+            else
+                angles.y = Mathf.Asin(sinp);
+
+            // yaw / z
+            float siny_cosp = 2 * (quat.w * quat.z + quat.x * quat.y);
+            float cosy_cosp = 1 - 2 * (quat.y * quat.y + quat.z * quat.z);
+            angles.z = (float)Mathf.Atan2(siny_cosp, cosy_cosp);
+
+            return angles;
         }
 
         #endregion
@@ -105,7 +160,7 @@ namespace CustomMath
                    w.Equals(other.w);
         }
 
-        public override string ToString() => $"({x},{y},{z},{w})";
+        public override string ToString() => $"({x:0.0},{y:0.0},{z:0.0},{w:0.0})";
 
         public override int GetHashCode() => x.GetHashCode() ^ (y.GetHashCode() << 2) ^ (z.GetHashCode() >> 2) ^ (w.GetHashCode() >> 1);
         #endregion
