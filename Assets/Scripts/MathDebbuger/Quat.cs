@@ -40,6 +40,7 @@ namespace CustomMath
 
         #region Operators
 
+        // TODO ver tema presicion
         public static bool operator ==(Quat lhs, Quat rhs) => lhs.Equals(rhs);
 
         public static bool operator !=(Quat lhs, Quat rhs) => !lhs.Equals(rhs);
@@ -52,6 +53,33 @@ namespace CustomMath
             float z = lhs.w * rhs.z + lhs.z * rhs.w + lhs.x * rhs.y - lhs.y * rhs.x; // imaginario K
 
             return new Quat(x, y, z, w); // Choclo final xD
+        }
+
+        public static Vec3 operator *(Quat rotation, Vec3 point)
+        {
+            float rotX = rotation.x * 2f;
+            float rotY = rotation.y * 2f;
+            float rotZ = rotation.z * 2f;
+
+            float rotX2 = rotation.x * rotX;
+            float rotY2 = rotation.y * rotY;
+            float rotZ2 = rotation.z * rotZ;
+
+            float rotXY = rotation.x * rotY;
+            float rotXZ = rotation.x * rotZ;
+            float rotYZ = rotation.y * rotZ;
+
+            float rotWX = rotation.w * rotX;
+            float rotWY = rotation.w * rotY;
+            float rotWZ = rotation.w * rotZ;
+
+            Vector3 result = default(Vector3);
+
+            result.x = (1f - (rotY2 + rotZ2)) * point.x + (rotXY - rotWZ) * point.y + (rotXZ + rotWY) * point.z;
+            result.y = (rotXY + rotWZ) * point.x + (1f - (rotX2 + rotZ2)) * point.y + (rotYZ - rotWX) * point.z;
+            result.z = (rotXZ - rotWY) * point.x + (rotYZ + rotWX) * point.y + (1f - (rotX2 + rotY2)) * point.z;
+
+            return result;
         }
 
         public static implicit operator Quaternion(Quat quat)
@@ -74,15 +102,9 @@ namespace CustomMath
         /// </summary>
         public Vec3 EulerAngles
         {
-            get
-            {
-                return ToEulerAngles(this) * Mathf.Rad2Deg;
-            }
+            get => ToEulerAngles(this) * Mathf.Rad2Deg;
 
-            set
-            {
-                this = ToQuaternion(value * Mathf.Deg2Rad);
-            }
+            set => this = ToQuaternion(value * Mathf.Deg2Rad);
         }
 
         /// <summary>
@@ -111,6 +133,7 @@ namespace CustomMath
 
         /// <summary>
         /// Transforma el <see cref="Quat"/> en un <see cref="Vec3"/>.
+        /// (En radianes)
         /// </summary>
         /// <param name="quat"></param>
         /// <returns></returns>
@@ -133,10 +156,28 @@ namespace CustomMath
             // yaw / z
             float siny_cosp = 2 * (quat.w * quat.z + quat.x * quat.y);
             float cosy_cosp = 1 - 2 * (quat.y * quat.y + quat.z * quat.z);
-            angles.z = (float)Mathf.Atan2(siny_cosp, cosy_cosp);
+            angles.z = Mathf.Atan2(siny_cosp, cosy_cosp);
 
             return angles;
         }
+
+
+        /// <summary>
+        /// Invierte la rotacion del quaternion
+        /// </summary>
+        /// <param name="rotation"></param>
+        /// <returns></returns>
+        public static Quat Inverse(Quat rotation)
+        {
+            Quat q;
+            q.w = rotation.w;
+            q.x = -rotation.x;
+            q.y = -rotation.y;
+            q.z = -rotation.z;
+            return q;
+        }
+
+        // TODO angulo, dot, lerp, lerpunclamped, slerp, slerpunclamped, lookrotation, rotatetowards
 
         #endregion
 
