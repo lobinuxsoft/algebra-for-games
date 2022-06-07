@@ -108,6 +108,11 @@ namespace CustomMath
         }
 
         /// <summary>
+        /// Devuelve una copia del Quat ya normalizado.
+        /// </summary>
+        public Quaternion Normalized => Normalize(this);
+
+        /// <summary>
         /// Transforma el <see cref="Vec3"/> en un <see cref="Quat"/>.
         /// </summary>
         /// <param name="vec3"></param>
@@ -163,9 +168,9 @@ namespace CustomMath
 
 
         /// <summary>
-        /// Invierte la rotacion del quaternion
+        /// Invierte la rotacion del quaternion.
         /// </summary>
-        /// <param name="rotation"></param>
+        /// <param name="rotation">Quaternion que queremos invertir.</param>
         /// <returns></returns>
         public static Quat Inverse(Quat rotation)
         {
@@ -177,7 +182,107 @@ namespace CustomMath
             return q;
         }
 
-        // TODO angulo, dot, lerp, lerpunclamped, slerp, slerpunclamped, lookrotation, rotatetowards
+        /// <summary>
+        /// Devuelve un Quat normalizado.
+        /// </summary>
+        /// <param name="quat">Quaternion que queremos normalizar.</param>
+        /// <returns></returns>
+        public static Quat Normalize(Quat quat)
+        {
+            float sqrtDot = Mathf.Sqrt(Dot(quat, quat));
+
+            if(sqrtDot < Mathf.Epsilon)
+            {
+                return Identity;
+            }
+
+            return new Quat(quat.x / sqrtDot, quat.y / sqrtDot, quat.z / sqrtDot, quat.w / sqrtDot);
+        }
+
+        /// <summary>
+        /// Normaliza el Quat.
+        /// </summary>
+        public void Normalize() => this = Normalize(this);
+
+        public static Quat Lerp(Quat a, Quat b, float t)
+        {
+            Quat r;
+            float time = 1 - t;
+            r.x = time * a.x + t * b.x;
+            r.y = time * a.y + t * b.y;
+            r.z = time * a.z + t * b.z;
+            r.w = time * a.w + t * b.w;
+
+            r.Normalize();
+
+            return r;
+        }
+
+        public static Quat LerpUnclamped(Quat a, Quat b, float t)
+        {
+            // TODO implementar LerpUnclamped
+            return Quat.Identity;
+        }
+
+        public static Quat Slerp(Quat a, Quat b, float t)
+        {
+            Quat r;
+
+            float time = 1 - t;
+
+            float wa, wb;
+
+            float theta = Mathf.Acos(Dot(a, b));
+            float sn = Mathf.Sin(theta);
+
+            wa = Mathf.Sin(time * theta) / sn;
+            wb = Mathf.Sin(time * theta) / sn;
+
+            r.x = wa * a.x + wb * b.x;
+            r.y = wa * a.y + wb * b.y;
+            r.z = wa * a.z + wb * b.z;
+            r.w = wa * a.w + wb * b.w;
+
+            r.Normalize();
+
+            return r;
+        }
+
+        public static Quat SlerpUnclamped(Quat a, Quat b, float t)
+        {
+            // TODO implementar SlerpUnclamped
+            return Quat.Identity;
+        }
+
+        public static float Angle(Quat a, Quat b)
+        {
+            float dot = Dot(a, b);
+            return IsEqualUsingDot(dot) ? 0f : (Mathf.Acos(Mathf.Min(Mathf.Abs(dot), 1f)) * 2f * Mathf.Rad2Deg);
+        }
+
+        private static bool IsEqualUsingDot(float dot) => dot > 0.999999f;
+
+        public static float Dot(Quat a, Quat b) => a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+
+        public static Quat LookRotation(Vec3 forward, Vec3 upwards)
+        {
+            // TODO implementar LookRotation con 2 vectores
+            return Quat.Identity;
+        }
+
+        public static Quat LookRotation(Vec3 forward) => LookRotation(forward, Vec3.Up);
+
+        public static Quat RotateTowards(Quat from, Quat to, float maxDegreesDelta)
+        {
+            float angle = Angle(from, to);
+
+            if (angle == 0f)
+            {
+                return to;
+            }
+
+            return SlerpUnclamped(from, to, Mathf.Min(1f, maxDegreesDelta / angle));
+        }
 
         #endregion
 
