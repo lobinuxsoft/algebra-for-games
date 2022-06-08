@@ -110,14 +110,18 @@ namespace CustomMath
         /// <summary>
         /// Devuelve una copia del Quat ya normalizado.
         /// </summary>
-        public Quaternion Normalized => Normalize(this);
+        public Quat Normalized => Normalize(this);
+
+        public static Quat Euler(float x, float y, float z) => ToQuaternion(new Vec3(x, y, z) * Mathf.Deg2Rad);
+
+        public static Quat Euler(Vec3 euler) => ToQuaternion(euler * Mathf.Deg2Rad);
 
         /// <summary>
         /// Transforma el <see cref="Vec3"/> en un <see cref="Quat"/>.
         /// </summary>
         /// <param name="vec3"></param>
         /// <returns></returns>
-        private Quat ToQuaternion(Vec3 vec3) // yaw (Z), pitch (Y), roll (X)
+        private static Quat ToQuaternion(Vec3 vec3) // yaw (Z), pitch (Y), roll (X)
         {
             float cy = Mathf.Cos(vec3.z * .5f);
             float sy = Mathf.Sin(vec3.z * .5f);
@@ -142,7 +146,7 @@ namespace CustomMath
         /// </summary>
         /// <param name="quat"></param>
         /// <returns></returns>
-        private Vec3 ToEulerAngles(Quat quat)
+        private static Vec3 ToEulerAngles(Quat quat)
         {
             Vec3 angles;
 
