@@ -166,6 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a937b835abc0bfb42ac63fdc570e5fa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  exercises: 1
   angle: 0
 --- !u!850595691 &163356380
 LightingSettings:
@@ -420,7 +421,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1574193200
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -433,7 +434,7 @@ MonoBehaviour:
   m_Script: {fileID: 1731222253, guid: 7c3b5ebf56a5dee4ba55cb227a4d46cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ejercicio: 0
+  ejercicio: 2
   angle: 0
 --- !u!4 &1574193201
 Transform:

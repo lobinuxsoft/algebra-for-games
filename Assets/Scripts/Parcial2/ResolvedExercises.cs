@@ -25,9 +25,12 @@ public class ResolvedExercises : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        HideAllVectors();
+
         switch (exercises)
         {
             case 1:
+                
                 vectorA = Quat.Euler(new Vec3(0, angle, 0)) * vectorA;
                 Vector3Debugger.UpdatePosition(nameof(vectorA), vectorA);
                 break;
@@ -36,5 +39,13 @@ public class ResolvedExercises : MonoBehaviour
             case 3:
                 break;
         }
+    }
+
+    private void HideAllVectors()
+    {
+        Vector3Debugger.TurnOffVector(nameof(vectorA));
+        Vector3Debugger.TurnOffVector(nameof(vectorB));
+        Vector3Debugger.TurnOffVector(nameof(vectorC));
+        Vector3Debugger.TurnOffVector(nameof(vectorD));
     }
 }
