@@ -43,9 +43,15 @@ public class ResolvedExercises : MonoBehaviour
 
     private void HideAllVectors()
     {
-        Vector3Debugger.TurnOffVector(nameof(vectorA));
-        Vector3Debugger.TurnOffVector(nameof(vectorB));
-        Vector3Debugger.TurnOffVector(nameof(vectorC));
-        Vector3Debugger.TurnOffVector(nameof(vectorD));
+        HideVector(nameof(vectorA));
+        HideVector(nameof(vectorB));
+        HideVector(nameof(vectorC));
+        HideVector(nameof(vectorD));
+    }
+
+    private void HideVector(string key)
+    {
+        Vector3Debugger.TurnOffVector(key);
+        Vector3Debugger.DisableEditorView(key);
     }
 }
