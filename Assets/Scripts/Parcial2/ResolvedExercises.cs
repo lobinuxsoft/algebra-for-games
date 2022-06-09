@@ -30,13 +30,28 @@ public class ResolvedExercises : MonoBehaviour
         switch (exercises)
         {
             case 1:
-                
+                ShowVector(nameof(vectorA));
                 vectorA = Quat.Euler(new Vec3(0, angle, 0)) * vectorA;
                 Vector3Debugger.UpdatePosition(nameof(vectorA), vectorA);
                 break;
             case 2:
+                ShowVector(nameof(vectorA));
+                ShowVector(nameof(vectorB));
+                ShowVector(nameof(vectorC));
+
+                vectorA = Quat.Euler(new Vec3(0, angle, 0)) * vectorA;
+                vectorB = Quat.Euler(new Vec3(0, angle, 0)) * vectorB;
+                vectorC = Quat.Euler(new Vec3(0, angle, 0)) * vectorC;
+
+                Vector3Debugger.UpdatePosition(nameof(vectorA), vectorA);
+                Vector3Debugger.UpdatePosition(nameof(vectorB), vectorA, vectorB);
+                Vector3Debugger.UpdatePosition(nameof(vectorC), vectorB, vectorC);
+
                 break;
             case 3:
+
+
+
                 break;
         }
     }
@@ -53,5 +68,11 @@ public class ResolvedExercises : MonoBehaviour
     {
         Vector3Debugger.TurnOffVector(key);
         Vector3Debugger.DisableEditorView(key);
+    }
+
+    private void ShowVector(string key)
+    {
+        Vector3Debugger.TurnOnVector(key);
+        Vector3Debugger.EnableEditorView(key);
     }
 }
