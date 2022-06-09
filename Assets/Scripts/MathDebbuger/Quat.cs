@@ -40,10 +40,9 @@ namespace CustomMath
 
         #region Operators
 
-        // TODO ver tema presicion
-        public static bool operator ==(Quat lhs, Quat rhs) => lhs.Equals(rhs);
+        public static bool operator ==(Quat lhs, Quat rhs) => IsEqualUsingDot(Dot(lhs, rhs));
 
-        public static bool operator !=(Quat lhs, Quat rhs) => !lhs.Equals(rhs);
+        public static bool operator !=(Quat lhs, Quat rhs) => !(lhs == rhs);
 
         public static Quat operator *(Quat lhs, Quat rhs)
         {
@@ -73,7 +72,7 @@ namespace CustomMath
             float rotWY = rotation.w * rotY;
             float rotWZ = rotation.w * rotZ;
 
-            Vector3 result = default(Vector3);
+            Vec3 result = Vec3.Zero;
 
             result.x = (1f - (rotY2 + rotZ2)) * point.x + (rotXY - rotWZ) * point.y + (rotXZ + rotWY) * point.z;
             result.y = (rotXY + rotWZ) * point.x + (1f - (rotX2 + rotZ2)) * point.y + (rotYZ - rotWX) * point.z;
@@ -187,7 +186,7 @@ namespace CustomMath
         }
 
         /// <summary>
-        /// Devuelve un Quat normalizado.
+        /// Devuelve un <see cref="Quat"/> normalizado.
         /// </summary>
         /// <param name="quat">Quaternion que queremos normalizar.</param>
         /// <returns></returns>
@@ -228,7 +227,25 @@ namespace CustomMath
             return Quat.Identity;
         }
 
-        public static Quat Slerp(Quat a, Quat b, float t)
+        // https://www.youtube.com/watch?v=dttFiVn0rvc&list=PLW3Zl3wyJwWNWsJIPZrmY19urkYHXOH3N
+
+        /// <summary>
+        /// Interpola esféricamente entre los <see cref="Quat"/> a y b por t. El parámetro t está sujeto al rango [0, 1].
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static Quat Slerp(Quat a, Quat b, float t) => SlerpUnclamped(a, b, Mathf.Clamp01(t));
+
+        /// <summary>
+        /// Interpola esféricamente entre a y b por t. El parámetro t no está sujeto.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static Quat SlerpUnclamped(Quat a, Quat b, float t)
         {
             Quat r;
 
@@ -252,20 +269,32 @@ namespace CustomMath
             return r;
         }
 
-        public static Quat SlerpUnclamped(Quat a, Quat b, float t)
-        {
-            // TODO implementar SlerpUnclamped
-            return Quat.Identity;
-        }
-
+        /// <summary>
+        /// Devuelve el angulo en tre 2 <see cref="Quat"/> en grados.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static float Angle(Quat a, Quat b)
         {
+            // Se calcula el producto punto para saber si los quaterniones tienen la misma orientacion, si la tienen entonces el angulo es 0.
             float dot = Dot(a, b);
+
+            // Se busca el numero mas chico entre el absoluto del producto punto y 1.
+            // Cuando se consigue eso se calcula el arco coseno en radianes.
+            // Se realizan las multiplicaciones para conseguir el angulo en grados.
+
             return IsEqualUsingDot(dot) ? 0f : (Mathf.Acos(Mathf.Min(Mathf.Abs(dot), 1f)) * 2f * Mathf.Rad2Deg);
         }
 
-        private static bool IsEqualUsingDot(float dot) => dot > 0.999999f;
+        private static bool IsEqualUsingDot(float dot) => dot > 0.999999f; // uso este numero constante para darle un margen a la presicion flotante.
 
+        /// <summary>
+        /// Devuelve el producto Punto entre 2 <see cref="Quat"/>.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static float Dot(Quat a, Quat b) => a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 
         public static Quat LookRotation(Vec3 forward, Vec3 upwards)
