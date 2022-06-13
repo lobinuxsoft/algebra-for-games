@@ -12,6 +12,8 @@ public class ResolvedExercises : MonoBehaviour
     Vec3 vectorC = new Vec3(20, 10, 0);
     Vec3 vectorD = new Vec3(20, 10, 0);
 
+    private void OnValidate() => SetExcersice(exercises);
+
     // Start is called before the first frame update
     void Start()
     {
@@ -54,6 +56,16 @@ public class ResolvedExercises : MonoBehaviour
 
                 break;
         }
+    }
+
+    private void SetExcersice(int index)
+    {
+        exercises = Mathf.Clamp(exercises, 1, 3);
+
+        vectorA = new Vec3(10, 0, 0);
+        vectorB = new Vec3(10, 10, 0);
+        vectorC = new Vec3(20, 10, 0);
+        vectorD = new Vec3(20, 10, 0);
     }
 
     private void HideAllVectors()
