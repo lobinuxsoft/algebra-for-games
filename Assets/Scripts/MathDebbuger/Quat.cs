@@ -113,7 +113,8 @@ namespace CustomMath
 
         public static Quat Euler(float x, float y, float z) => ToQuaternion(new Vec3(x, y, z) * Mathf.Deg2Rad);
 
-        public static Quat Euler(Vec3 euler) => ToQuaternion(euler * Mathf.Deg2Rad);
+        //public static Quat Euler(Vec3 euler) => ToQuaternion(euler * Mathf.Deg2Rad);
+        public static Quat Euler(Vec3 euler) => ToQuaternion(euler);
 
         /// <summary>
         /// Transforma el <see cref="Vec3"/> en un <see cref="Quat"/>.
@@ -122,21 +123,35 @@ namespace CustomMath
         /// <returns></returns>
         private static Quat ToQuaternion(Vec3 vec3) // yaw (Z), pitch (Y), roll (X)
         {
-            float cy = Mathf.Cos(vec3.z * .5f);
-            float sy = Mathf.Sin(vec3.z * .5f);
-            float cp = Mathf.Cos(vec3.y * .5f);
-            float sp = Mathf.Sin(vec3.y * .5f);
-            float cr = Mathf.Cos(vec3.x * .5f);
-            float sr = Mathf.Sin(vec3.x * .5f);
+            float cz = Mathf.Cos(Mathf.Deg2Rad * vec3.z / 2);
+            float sz = Mathf.Sin(Mathf.Deg2Rad * vec3.z / 2);
+            float cy = Mathf.Cos(Mathf.Deg2Rad * vec3.y / 2);
+            float sy = Mathf.Sin(Mathf.Deg2Rad * vec3.y / 2);
+            float cx = Mathf.Cos(Mathf.Deg2Rad * vec3.x / 2);
+            float sx = Mathf.Sin(Mathf.Deg2Rad * vec3.x / 2);
 
-            Quat quat = new Quat();
+            Quat rotZ = Quat.Identity;
+            rotZ.w = cz; // Real
+            rotZ.z = sz; // Imaginario
 
-            quat.w = cr * cp * cy + sr * sp * sy;
-            quat.x = sr * cp * cy - cr * sp * sy;
-            quat.y = cr * sp * cy + sr * cp * sy;
-            quat.z = cr * cp * sy - sr * sp * cy;
+            Quat rotX = Quat.Identity;
+            rotX.w = cx; // Real
+            rotX.x = sx; // Imaginario
 
-            return quat;
+            Quat rotY = Quat.Identity;
+            rotY.w = cy; // Real
+            rotY.y = sy; // Imaginario
+
+            return rotX * rotY * rotZ;
+
+            //Quat quat = new Quat();
+
+            //quat.w = cx * cy * cz + sx * sy * sz;
+            //quat.x = sx * cy * cz - cx * sy * sz;
+            //quat.y = cx * sy * cz + sx * cy * sz;
+            //quat.z = cx * cy * sz - sx * sy * cz;
+
+            //return quat;
         }
 
         /// <summary>

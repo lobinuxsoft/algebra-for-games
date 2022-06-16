@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a937b835abc0bfb42ac63fdc570e5fa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  exercises: 1
+  exercises: 3
   angle: 1
 --- !u!850595691 &163356380
 LightingSettings:

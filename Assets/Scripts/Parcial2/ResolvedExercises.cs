@@ -10,7 +10,7 @@ public class ResolvedExercises : MonoBehaviour
     Vec3 vectorA = new Vec3(10, 0, 0);
     Vec3 vectorB = new Vec3(10, 10, 0);
     Vec3 vectorC = new Vec3(20, 10, 0);
-    Vec3 vectorD = new Vec3(20, 10, 0);
+    Vec3 vectorD = new Vec3(20, 20, 0);
 
     private void OnValidate() => SetExcersice(exercises);
 
@@ -52,7 +52,18 @@ public class ResolvedExercises : MonoBehaviour
                 break;
             case 3:
 
+                ShowVector(nameof(vectorA));
+                ShowVector(nameof(vectorB));
+                ShowVector(nameof(vectorC));
+                ShowVector(nameof(vectorD));
 
+                vectorA = Quat.Euler(new Vec3(angle, angle, 0)) * vectorA;
+                vectorC = Quat.Euler(new Vec3(-angle, -angle, 0)) * vectorC;
+
+                Vector3Debugger.UpdatePosition(nameof(vectorA), vectorA);
+                Vector3Debugger.UpdatePosition(nameof(vectorB), vectorA, vectorB);
+                Vector3Debugger.UpdatePosition(nameof(vectorC), vectorB, vectorC);
+                Vector3Debugger.UpdatePosition(nameof(vectorD), vectorC, vectorD);
 
                 break;
         }
@@ -65,7 +76,7 @@ public class ResolvedExercises : MonoBehaviour
         vectorA = new Vec3(10, 0, 0);
         vectorB = new Vec3(10, 10, 0);
         vectorC = new Vec3(20, 10, 0);
-        vectorD = new Vec3(20, 10, 0);
+        vectorD = new Vec3(20, 20, 0);
     }
 
     private void HideAllVectors()
