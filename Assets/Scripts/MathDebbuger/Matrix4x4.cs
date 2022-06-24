@@ -9,18 +9,18 @@ namespace CustomMath
     {
         /*
             *Variables
-            Constructor
+            *Constructor
             *this[index]
             *this[row, colum]
-            transpose
-            rotation
-            lossyscale
-            Rotate
-            Scale
-            Translate
-            Transpose
-            TRS
-            ToString
+            *transpose
+            *rotation
+            *lossyscale
+            *Rotate
+            *Scale
+            *Translate
+            *Transpose
+            *TRS
+            *ToString
             *Matrix4x4 * Matrix4x4
             *Matrix4x4 * Vector4
             *Matrix4x4 == Matrix4x4
@@ -68,6 +68,12 @@ namespace CustomMath
         #endregion
 
         #region Default values
+
+        public Quaternion rotation => GetRotation();
+
+        public Vec3 lossyScale => GetLossyScale();
+
+        public Matrix4x4 transpose => Transpose(this);
 
         private static readonly Matrix4x4 Zero = new Matrix4x4(new Vector4(0f, 0f, 0f, 0f), new Vector4(0f, 0f, 0f, 0f), new Vector4(0f, 0f, 0f, 0f), new Vector4(0f, 0f, 0f, 0f));
 
@@ -254,9 +260,172 @@ namespace CustomMath
             };
         }
 
+        /// <summary>
+        /// Translada la <see cref="Matrix4x4"/> en base a <see cref="Vec3"/>.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public static Matrix4x4 Translate(Vec3 vector)
+        {
+            Matrix4x4 result = default(Matrix4x4);
+            result.m00 = 1f;
+            result.m01 = 0f;
+            result.m02 = 0f;
+            result.m03 = vector.x;
+            result.m10 = 0f;
+            result.m11 = 1f;
+            result.m12 = 0f;
+            result.m13 = vector.y;
+            result.m20 = 0f;
+            result.m21 = 0f;
+            result.m22 = 1f;
+            result.m23 = vector.z;
+            result.m30 = 0f;
+            result.m31 = 0f;
+            result.m32 = 0f;
+            result.m33 = 1f;
+            return result;
+        }
+
+        /// <summary>
+        /// Rota la <see cref="Matrix4x4"/> en base <see cref="Quat"/>.
+        /// </summary>
+        /// <param name="q"></param>
+        /// <returns></returns>
+        public static Matrix4x4 Rotate(Quat q)
+        {
+            float x = q.x * 2f;
+            float y = q.y * 2f;
+            float z = q.z * 2f;
+            float x2 = q.x * x;
+            float y2 = q.y * y;
+            float z2 = q.z * z;
+            float xy = q.x * y;
+            float xz = q.x * z;
+            float yz = q.y * z;
+            float wx = q.w * x;
+            float wy = q.w * y;
+            float wz = q.w * z;
+
+            Matrix4x4 result = default(Matrix4x4);
+
+            result.m00 = 1f - (y2 + z2);
+            result.m10 = xy + wz;
+            result.m20 = xz - wy;
+            result.m30 = 0f;
+            result.m01 = xy - wz;
+            result.m11 = 1f - (x2 + z2);
+            result.m21 = yz + wx;
+            result.m31 = 0f;
+            result.m02 = xz + wy;
+            result.m12 = yz - wx;
+            result.m22 = 1f - (x2 + y2);
+            result.m32 = 0f;
+            result.m03 = 0f;
+            result.m13 = 0f;
+            result.m23 = 0f;
+            result.m33 = 1f;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Cambia la escala de <see cref="Matrix4x4"/> en base a un <see cref="Vec3"/>.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public static Matrix4x4 Scale(Vec3 vector)
+        {
+            Matrix4x4 result = default(Matrix4x4);
+            result.m00 = vector.x;
+            result.m01 = 0f;
+            result.m02 = 0f;
+            result.m03 = 0f;
+            result.m10 = 0f;
+            result.m11 = vector.y;
+            result.m12 = 0f;
+            result.m13 = 0f;
+            result.m20 = 0f;
+            result.m21 = 0f;
+            result.m22 = vector.z;
+            result.m23 = 0f;
+            result.m30 = 0f;
+            result.m31 = 0f;
+            result.m32 = 0f;
+            result.m33 = 1f;
+            return result;
+        }
+
+        /// <summary>
+        /// Cambia el orden de <see cref="Matrix4x4"/>
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        public static Matrix4x4 Transpose(Matrix4x4 matrix)
+        {
+            float aux;
+
+            aux = matrix.m01;
+            matrix.m01 = matrix.m10;
+            matrix.m10 = aux;
+
+            aux = matrix.m02;
+            matrix.m02 = matrix.m20;
+            matrix.m20 = aux;
+
+            aux = matrix.m03;
+            matrix.m03 = matrix.m30;
+            matrix.m30 = aux;
+
+            aux = matrix.m12;
+            matrix.m12 = matrix.m21;
+            matrix.m21 = aux;
+
+            aux = matrix.m13;
+            matrix.m13 = matrix.m31;
+            matrix.m31 = aux;
+
+            aux = matrix.m23;
+            matrix.m23 = matrix.m32;
+            matrix.m32 = aux;
+
+            return matrix;
+        }
+
+        public static Matrix4x4 TRS(Vec3 translation, Quat rotation, Vec3 scale)
+        {
+            Matrix4x4 t = Matrix4x4.Translate(translation);
+            Matrix4x4 r = Matrix4x4.Rotate(rotation);
+            Matrix4x4 s = Matrix4x4.Scale(scale);
+
+            return t * r * s;
+        }
+
         #endregion
 
         #region Internals
+
+        // From https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
+        private Quat GetRotation()
+        {
+            Quat xr = new Quat(1, Mathf.Cos(m11) - Mathf.Sin(m12), Mathf.Sin(m21) + Mathf.Cos(m22), 1);
+            Quat yr = new Quat(Mathf.Cos(m00) + Mathf.Sin(m02), 1, -Mathf.Sin(m20) + Mathf.Cos(m22), 1);
+            Quat zr = new Quat(Mathf.Cos(m00) - Mathf.Sin(m01), Mathf.Sin(m10) + Mathf.Cos(m11), 1, 1);
+            return xr * yr * zr;
+        }
+
+        private Vec3 GetLossyScale()
+        {
+            return new Vec3(m00, m11, m22);
+        }
+
+        public override string ToString()
+        {
+            return $"{m00:00.00}\t{m01:00.00}\t{m02:00.00}\t{m03:00.00}\n" +
+                   $"{m10:00.00}\t{m11:00.00}\t{m12:00.00}\t{m13:00.00}\n" +
+                   $"{m20:00.00}\t{m21:00.00}\t{m22:00.00}\t{m23:00.00}\n" +
+                   $"{m30:00.00}\t{m31:00.00}\t{m32:00.00}\t{m33:00.00}";
+        }
 
         #endregion
     }

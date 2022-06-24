@@ -222,7 +222,9 @@ namespace CustomMath
         /// </summary>
         public void Normalize() => this = Normalize(this);
 
-        public static Quat Lerp(Quat a, Quat b, float t)
+        public static Quat Lerp(Quat a, Quat b, float t) => LerpUnclamped(a, b, Mathf.Clamp01(t));
+
+        public static Quat LerpUnclamped(Quat a, Quat b, float t)
         {
             Quat r;
             float time = 1 - t;
@@ -234,12 +236,6 @@ namespace CustomMath
             r.Normalize();
 
             return r;
-        }
-
-        public static Quat LerpUnclamped(Quat a, Quat b, float t)
-        {
-            // TODO implementar LerpUnclamped
-            return Quat.Identity;
         }
 
         // https://www.youtube.com/watch?v=dttFiVn0rvc&list=PLW3Zl3wyJwWNWsJIPZrmY19urkYHXOH3N
@@ -269,10 +265,13 @@ namespace CustomMath
             float wa, wb;
 
             float theta = Mathf.Acos(Dot(a, b));
+
+            if (theta < 0) theta = -theta;
+
             float sn = Mathf.Sin(theta);
 
             wa = Mathf.Sin(time * theta) / sn;
-            wb = Mathf.Sin(time * theta) / sn;
+            wb = Mathf.Sin((1 - time) * theta) / sn;
 
             r.x = wa * a.x + wb * b.x;
             r.y = wa * a.y + wb * b.y;
@@ -312,10 +311,20 @@ namespace CustomMath
         /// <returns></returns>
         public static float Dot(Quat a, Quat b) => a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 
+        // From https://stackoverflow.com/questions/12435671/quaternion-lookat-function
         public static Quat LookRotation(Vec3 forward, Vec3 upwards)
         {
-            // TODO implementar LookRotation con 2 vectores
-            return Quat.Identity;
+            Vec3 dir = Vec3.Normalize(upwards - forward);
+            Vec3 rotAxis = Vec3.Cross(Vec3.Forward, dir);
+            float dot = Vec3.Dot(Vec3.Forward, dir);
+
+            Quat result;
+            result.x = rotAxis.x;
+            result.y = rotAxis.y;
+            result.z = rotAxis.z;
+            result.w = dot + 1;
+
+            return result.Normalized;
         }
 
         public static Quat LookRotation(Vec3 forward) => LookRotation(forward, Vec3.Up);
