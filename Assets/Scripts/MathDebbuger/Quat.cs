@@ -44,6 +44,12 @@ namespace CustomMath
 
         public static bool operator !=(Quat lhs, Quat rhs) => !(lhs == rhs);
 
+        /// <summary>
+        /// Multiplicacion de <see cref="Quat"/>
+        /// </summary>
+        /// <param name="lhs"></param>
+        /// <param name="rhs"></param>
+        /// <returns></returns>
         public static Quat operator *(Quat lhs, Quat rhs)
         {
             float w = lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z; // Real
@@ -54,6 +60,13 @@ namespace CustomMath
             return new Quat(x, y, z, w); // Choclo final xD
         }
 
+        /// <summary>
+        /// Multiplica el <see cref="Quat"/> con el <see cref="Vec3"/>
+        /// y devuelve una copia del <see cref="Vec3"/> con la rotacion del <see cref="Quat"/>
+        /// </summary>
+        /// <param name="rotation"></param>
+        /// <param name="point"></param>
+        /// <returns></returns>
         public static Vec3 operator *(Quat rotation, Vec3 point)
         {
             float rotX = rotation.x * 2f;
@@ -369,4 +382,3 @@ namespace CustomMath
         #endregion
     }
 }
-
