@@ -12,12 +12,15 @@ public class ResolvedExercises : MonoBehaviour
     Vec3 vectorC = new Vec3(20, 10, 0);
     Vec3 vectorD = new Vec3(20, 20, 0);
 
+    Vec3 vecA;
+
     private void OnValidate() => SetExcersice(exercises);
 
     // Start is called before the first frame update
     void Start()
     {
-        Vector3Debugger.AddVector(Vector3.zero , vectorA, Color.red, nameof(vectorA));
+        vecA = Quat.Euler(new Vec3(0, angle, 0)) * new Vec3(10, 0, 0);
+        Vector3Debugger.AddVector(Vector3.zero , vectorA, Color.green, nameof(vectorA));
         Vector3Debugger.AddVector(vectorA, vectorB, Color.green, nameof(vectorB));
         Vector3Debugger.AddVector(vectorB , vectorC, Color.blue, nameof(vectorC));
         Vector3Debugger.AddVector(vectorC, vectorD, Color.cyan, nameof(vectorD));
@@ -25,7 +28,7 @@ public class ResolvedExercises : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         HideAllVectors();
 
@@ -33,7 +36,9 @@ public class ResolvedExercises : MonoBehaviour
         {
             case 1:
                 ShowVector(nameof(vectorA));
+
                 vectorA = Quat.Euler(new Vec3(0, angle, 0)) * vectorA;
+
                 Vector3Debugger.UpdatePosition(nameof(vectorA), vectorA);
                 break;
             case 2:
@@ -59,7 +64,7 @@ public class ResolvedExercises : MonoBehaviour
 
                 vectorA = Quat.Euler(new Vec3(angle, angle, 0)) * vectorA;
                 vectorC = Quat.Euler(new Vec3(-angle, -angle, 0)) * vectorC;
-
+                
                 Vector3Debugger.UpdatePosition(nameof(vectorA), vectorA);
                 Vector3Debugger.UpdatePosition(nameof(vectorB), vectorA, vectorB);
                 Vector3Debugger.UpdatePosition(nameof(vectorC), vectorB, vectorC);
@@ -67,6 +72,11 @@ public class ResolvedExercises : MonoBehaviour
 
                 break;
         }
+
+        //if(Time.time > .1f)
+        //{
+        //    UnityEditor.EditorApplication.isPaused = true;
+        //}
     }
 
     private void SetExcersice(int index)

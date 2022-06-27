@@ -143,28 +143,28 @@ namespace CustomMath
             float cx = Mathf.Cos(Mathf.Deg2Rad * vec3.x / 2);
             float sx = Mathf.Sin(Mathf.Deg2Rad * vec3.x / 2);
 
-            Quat rotZ = Quat.Identity;
-            rotZ.w = cz; // Real
-            rotZ.z = sz; // Imaginario
+            //Quat rotZ = Quat.Identity;
+            //rotZ.w = cz; // Real
+            //rotZ.z = sz; // Imaginario
 
-            Quat rotX = Quat.Identity;
-            rotX.w = cx; // Real
-            rotX.x = sx; // Imaginario
+            //Quat rotX = Quat.Identity;
+            //rotX.w = cx; // Real
+            //rotX.x = sx; // Imaginario
 
-            Quat rotY = Quat.Identity;
-            rotY.w = cy; // Real
-            rotY.y = sy; // Imaginario
+            //Quat rotY = Quat.Identity;
+            //rotY.w = cy; // Real
+            //rotY.y = sy; // Imaginario
 
-            return rotX * rotY * rotZ;
+            //return rotX * rotY * rotZ;
 
-            //Quat quat = new Quat();
+            Quat quat = new Quat();
 
-            //quat.w = cx * cy * cz + sx * sy * sz;
-            //quat.x = sx * cy * cz - cx * sy * sz;
-            //quat.y = cx * sy * cz + sx * cy * sz;
-            //quat.z = cx * cy * sz - sx * sy * cz;
+            quat.w = cx * cy * cz + sx * sy * sz;
+            quat.x = sx * cy * cz - cx * sy * sz;
+            quat.y = cx * sy * cz + sx * cy * sz;
+            quat.z = cx * cy * sz - sx * sy * cz;
 
-            //return quat;
+            return quat;
         }
 
         /// <summary>
