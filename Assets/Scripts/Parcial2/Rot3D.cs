@@ -10,7 +10,7 @@ public class Rot3D : MonoBehaviour
         float imaginaryX;
         float imaginaryY;
         float imaginaryZ;
-
+        
         imaginaryZ = Mathf.Sin(Mathf.Deg2Rad * angle.z / 2);
         real = Mathf.Cos(Mathf.Deg2Rad * angle.z / 2);
 
