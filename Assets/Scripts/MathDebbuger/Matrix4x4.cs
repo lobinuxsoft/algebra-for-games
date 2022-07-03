@@ -309,22 +309,22 @@ namespace CustomMath
 
             Matrix4x4 result = default(Matrix4x4);
 
-            result.m00 = 1f - (y2 + z2);
-            result.m10 = xy + wz;
-            result.m20 = xz - wy;
+            result.m00 = 1f - (y2 + z2);    // Real de X
+            result.m10 = xy + wz;   // Imaginario de X
+            result.m20 = xz - wy;   // Imaginario de X
             result.m30 = 0f;
-            result.m01 = xy - wz;
-            result.m11 = 1f - (x2 + z2);
-            result.m21 = yz + wx;
+            result.m01 = xy - wz;   // Imaginario de Y
+            result.m11 = 1f - (x2 + z2);    // Real de Y
+            result.m21 = yz + wx;   // Imaginario de Y
             result.m31 = 0f;
-            result.m02 = xz + wy;
-            result.m12 = yz - wx;
-            result.m22 = 1f - (x2 + y2);
+            result.m02 = xz + wy;   // Imaginario de Z
+            result.m12 = yz - wx;   // Imaginario de Z
+            result.m22 = 1f - (x2 + y2);    // Real de Z
             result.m32 = 0f;
             result.m03 = 0f;
             result.m13 = 0f;
             result.m23 = 0f;
-            result.m33 = 1f;
+            result.m33 = 1f;    // Real
 
             return result;
         }

@@ -126,7 +126,6 @@ namespace CustomMath
 
         public static Quat Euler(float x, float y, float z) => ToQuaternion(new Vec3(x, y, z) * Mathf.Deg2Rad);
 
-        //public static Quat Euler(Vec3 euler) => ToQuaternion(euler * Mathf.Deg2Rad);
         public static Quat Euler(Vec3 euler) => ToQuaternion(euler);
 
         /// <summary>
@@ -159,10 +158,10 @@ namespace CustomMath
 
             Quat quat = new Quat();
 
-            quat.w = cx * cy * cz + sx * sy * sz;
-            quat.x = sx * cy * cz - cx * sy * sz;
-            quat.y = cx * sy * cz + sx * cy * sz;
-            quat.z = cx * cy * sz - sx * sy * cz;
+            quat.w = cx * cy * cz + sx * sy * sz;   // Real
+            quat.x = sx * cy * cz - cx * sy * sz;   // Imaginario X
+            quat.y = cx * sy * cz + sx * cy * sz;   // Imaginario Y
+            quat.z = cx * cy * sz - sx * sy * cz;   // Imaginario Z
 
             return quat;
         }
@@ -251,10 +250,11 @@ namespace CustomMath
             return r;
         }
 
-        // https://www.youtube.com/watch?v=dttFiVn0rvc&list=PLW3Zl3wyJwWNWsJIPZrmY19urkYHXOH3N
 
         /// <summary>
         /// Interpola esféricamente entre los <see cref="Quat"/> a y b por t. El parámetro t está sujeto al rango [0, 1].
+        // https://www.youtube.com/watch?v=dttFiVn0rvc&list=PLW3Zl3wyJwWNWsJIPZrmY19urkYHXOH3N
+        // https://en.wikipedia.org/wiki/Slerp#:~:text=Quaternion%20Slerp,-When%20Slerp%20is&text=The%20effect%20is%20a%20rotation,of%20unit%20quaternions%2C%20S3
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -264,6 +264,8 @@ namespace CustomMath
 
         /// <summary>
         /// Interpola esféricamente entre a y b por t. El parámetro t no está sujeto.
+        /// https://splines.readthedocs.io/en/latest/rotation/slerp.html
+        /// https://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/index.htm
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -277,9 +279,9 @@ namespace CustomMath
 
             float wa, wb;
 
-            float theta = Mathf.Acos(Dot(a, b));
+            float theta = Mathf.Acos(Dot(a, b)); // El resultado del arco coseno del producto escalar entre 2 Quaterniones, reprecenta el sentido.
 
-            if (theta < 0) theta = -theta;
+            if (theta < 0) theta = -theta; // Siel resultado es menor a cero, se invierte el valor para que siempre sea un numero positivo.
 
             float sn = Mathf.Sin(theta);
 
