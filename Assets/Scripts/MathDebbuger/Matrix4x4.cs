@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace CustomMath
@@ -324,7 +322,7 @@ namespace CustomMath
             result.m03 = 0f;
             result.m13 = 0f;
             result.m23 = 0f;
-            result.m33 = 1f;    // Real
+            result.m33 = 1f;    // Simpre es uno?
 
             return result;
         }
