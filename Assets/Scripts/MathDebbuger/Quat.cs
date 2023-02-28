@@ -329,6 +329,8 @@ namespace CustomMath
         // From https://stackoverflow.com/questions/12435671/quaternion-lookat-function
         public static Quat LookRotation(Vec3 forward, Vec3 upwards)
         {
+            // TODO pasar los vectores a Quat, y usar Slerp con T1 para arreglar este desastre xD
+
             Vec3 dir = Vec3.Normalize(upwards - forward);
             Vec3 rotAxis = Vec3.Cross(Vec3.Forward, dir);
             float dot = Vec3.Dot(Vec3.Forward, dir);
